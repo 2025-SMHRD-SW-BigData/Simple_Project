@@ -25,7 +25,9 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleBack     = () => navigate(-1);
-  const handleLogin    = e => { e.preventDefault(); console.log(email, pw); };
+  const handleLogin    = e => { e.preventDefault(); console.log(email, pw); 
+    navigate('/community'); 
+    };
   const handleSNSLogin = provider => console.log(`${provider} 로그인`);
 
   return (

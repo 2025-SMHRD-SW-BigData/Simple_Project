@@ -1,0 +1,184 @@
+/* src/style/Community.css (이전 코드는 지우고 이걸로 교체) */
+
+/* --- 전체 레이아웃 --- */
+.community-page {
+    background-color: #f0f2f5;
+    justify-content: flex-start;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 피드 영역의 전체적인 스타일 */
+.feed-container-final {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+}
+
+/* --- 상단 헤더 (최종 디자인) --- */
+/* --- 상단 헤더 (최종 디자인) --- */
+.community-header-final {
+    background-color: #34B3EB;
+    padding: 10px 15px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* 양쪽 끝으로 요소를 분산 */
+    width: 100%;
+}
+/* 헤더 왼쪽 정렬 */
+.header-left-section {
+    display: flex;
+    flex-direction: column; /* 세로로 정렬 */
+    align-items: flex-start; /* 왼쪽 정렬 */
+}
+
+/* "See Sea" 로고 스타일 */
+.header-title-final {
+    font-family: 'Rammetto One', cursive;
+    font-size: 22px;
+    /* position: absolute; 속성 삭제! */
+}
+
+/* 프로필 영역 스타일 */
+.profile-main-final {
+    display: flex;
+    align-items: center;
+    /* margin: 0 auto; 속성 삭제! */
+}
+
+.profile-pic-final {
+    font-size: 50px;
+    color: #aae0f9;
+    margin-right: 12px;
+}
+
+.profile-details-final {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.nickname-btn-final {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-weight: bold;
+    margin-bottom: 6px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.profile-stats-final {
+    display: flex;
+    gap: 12px;
+    font-size: 12px;
+}
+
+/* 메뉴 버튼 스타일 */
+.menu-btn-final {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+/* --- 게시물(피드) (최종 디자인) --- */
+.post-final {
+    background-color: #fff;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+
+.post-author-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+}
+
+.author-nickname {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.follow-btn {
+    background-color: #e0e0e0;
+    color: #333;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.post-image-container {
+    position: relative; /* 캡션 오버레이의 기준점 */
+}
+
+.post-image-final {
+    width: 100%;
+    display: block;
+}
+
+.post-caption-overlay-final {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(255, 137, 137, 0.9), rgba(255, 137, 137, 0));
+    color: white;
+    padding: 30px 12px 12px 12px;
+    font-size: 13px;
+    line-height: 1.4;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+.post-caption-overlay-final .more-link { color: #fff; text-decoration: underline; }
+.post-caption-overlay-final .tags { font-weight: bold; }
+
+.post-actions-final {
+    display: flex;
+    padding: 10px 12px;
+    gap: 15px;
+    border-top: 1px solid #efefef;
+}
+.action-btn-final {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+.action-btn-final svg {
+    font-size: 20px;
+}
+
+
+/* --- 하단 내비게이션 (최종 디자인) --- */
+.bottom-nav-final {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    height: 60px;
+    background-color: #fff;
+    border-top: 1px solid #dbdbdb;
+}
+.bottom-nav-final button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 32px; /* 아이콘 크기 키움 */
+    color: #333;
+}
