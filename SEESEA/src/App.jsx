@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Main from './components/Main'
 import Login from './components/Login'
+import Join from './components/Join'
 import './App.css'
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
         <Routes>
           <Route path='/' element={<Main/>}></Route>
           <Route path='/login' element={<Login/>}></Route>
+          <Route path='/join' element={<Join/>}></Route>
         </Routes>
       </div>
     </>

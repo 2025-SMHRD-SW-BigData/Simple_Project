@@ -1,29 +1,39 @@
-import React from 'react'
-import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
-import img from '../assets/Rogo.png'
-import '../style/Main.css'
+// src/components/Main.jsx
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import '../style/main.css';
 
 const Main = () => {
-  const nav = useNavigate();
+  const navigate = useNavigate();
   return (
     <div className="screen-container">
-      {/* 상단 로고 */}
-        <div
+      <div
         className="logo-circle"
-        style={{ backgroundImage: `url(${img})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
-      ></div>
+        style={{
+          backgroundImage: `url(/src/assets/Rogo.png)`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
+      />
 
-      {/* 앱 제목 */}
-      <h1 className="title">See Sea</h1>
+      <h1 className="main-title">See Sea</h1>
 
-      {/* 버튼 그룹 */}
       <div className="button-group">
-        <button className="btn login-btn" onClick={() => {nav('/login')}}>로그인</button>
-        <button className="btn signup-btn">회원가입</button>
+        <button
+          className="btn login-btn"
+          onClick={() => navigate('/login', { state: { from: '/' } })}
+        >
+          로그인
+        </button>
+        <button
+          className="btn signup-btn"
+          onClick={() => navigate('/join', { state: { from: '/' } })}
+        >
+          회원가입
+        </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Main
+export default Main;
