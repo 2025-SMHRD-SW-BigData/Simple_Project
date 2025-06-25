@@ -59,24 +59,7 @@ const Join = () => {
     });
   };
 
-  //노드서버 연결
-const tryJoin =()=>{
-  axios.get('http://localhost:3001/join',{
-    params :{
-      Name : name,
-      Email : email,
-      Pw : password,
-      ConfirmPw : confirmPassword
-    }
-  })
-    .then((res)=>{
-      console.log(res)
-    })
 
-    .catch((err) => {
-      console.error('에러 발생:', err);
-    })
-  }
   return (
     <div className="join-screen-container">
       <div className="back-icon" onClick={handleBack}>
