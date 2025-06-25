@@ -2,6 +2,18 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../style/join.css';  // 별도로 만들어 주세요
 
+import axios from 'axios'
+
+  const tryJoin =()=>{
+    axios.get('http://localhost:3001/join')
+    .then((res)=>{
+      console.log(res)
+    })
+    .catch((err) => {
+      console.error('에러 발생:', err);
+    });
+  }
+
 // 뒤로가기 화살표 SVG (Login과 동일)
 const BackIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24">
@@ -102,7 +114,7 @@ const Join = () => {
         </form>
 
         {/* 로그인 링크 */}
-        <Link to="/login" className="login-link">
+        <Link to="/login" className="login-link" onClick={tryJoin}>
           이미 회원이신가요? <span>로그인</span>
         </Link>
       </div>

@@ -6,6 +6,18 @@ import googleIcon from '../assets/btn_google.svg';
 import kakaoIcon  from '../assets/btn_kakao.svg';
 import naverIcon  from '../assets/btn_naver.svg';
 
+import axios from 'axios'
+
+  const tryLogin =()=>{
+    axios.post('http://localhost:3001/login')
+    .then((res)=>{
+      console.log(res)
+    })
+      .catch((err) => {
+      console.error('에러 발생:', err);
+    });
+  }
+
 const BackIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24">
     <path
@@ -103,7 +115,7 @@ const Login = () => {
           </button>
         </form>
 
-        <Link to="/join" className="signup-link">
+        <Link to="/join" className="signup-link" onClick={tryLogin}>
           계정이 존재하지 않나요? <span>회원가입</span>
         </Link>
       </div>
