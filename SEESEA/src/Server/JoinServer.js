@@ -23,13 +23,15 @@ let conn = mysql.createConnection({
 app.get('/join', (req,res)=>{
     console.log('접근 확인')
 
-    const JoinId = req.query.Email
-    const JoinPw = req.query.Pw
+    const JoinId = req.query.USER_ID
+    const JoinPw = req.query.PW
+    const JoinName = req.query.NAME
+    const JoinAge = req.query.AGE
 
  
 
-    let sql = 'insert into member values(?,?)'
-    conn.query(sql,[JoinId,JoinPw],(err,rows)=>{
+    let sql = 'insert into Member(USER_ID, PW, NAME, AGE) values (?, ?, ?, ?)';
+    conn.query(sql,[JoinId,JoinPw,JoinName,JoinAge],(err,rows)=>{
          if(!err){
             console.log('입력성공')
             
@@ -41,5 +43,6 @@ app.get('/join', (req,res)=>{
 
 })
 
-
-app.listen(3001)
+app.listen(3001, () => {
+    console.log('서버 실행 중')
+}) 
