@@ -110,7 +110,7 @@ const Login = () => {
           </div>
           <br></br>
 
-          <button type="submit" className="login-btn">
+          <button type="submit" className="login-btn" onClick={() => {navigate('/commumain')}}>
             로그인
           </button>
         </form>

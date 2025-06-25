@@ -3,6 +3,8 @@ import { Routes, Route } from 'react-router-dom'
 import Main from './components/Main'
 import Login from './components/Login'
 import Join from './components/Join'
+import MainComu from './components/MainComu'
+import MyMap from './components/MyMap'
 import './App.css'
 import Community from './components/Community'; // Community 컴포넌트 import
 
