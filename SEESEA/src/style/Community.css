@@ -25,13 +25,16 @@ body {
 
 /* 2. 앱 컨테이너 (390×844 ⇒ 450×950으로 조정된 상태 유지) */
 .screen-container.community-page {
-  width: 500px;
-  height: 1000px;
+  width: 450px;
+  height: 950px;
   margin: 20px auto;
   background-color: #ffffff;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  overflow: hidden;
+  
+  /* 여기서 overflow-y:auto 만 추가 */
+  overflow-y: auto;
+  
   display: flex;
   flex-direction: column;
   position: relative;
