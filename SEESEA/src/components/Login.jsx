@@ -29,7 +29,7 @@ const Login = () => {
     navigate('/community'); 
     };
   const handleSNSLogin = provider => console.log(`${provider} 로그인`);
-
+  <br></br>
   return (
     <div className="login-screen-container">
       <div className="back-icon" onClick={handleBack}>
@@ -98,7 +98,7 @@ const Login = () => {
           </div>
           <br></br>
 
-          <button type="submit" className="login-btn" onClick={() => {navigate('/commumain')}}>
+          <button type="submit" className="login-btn" onClick={() => {navigate('/community')}}>
             로그인
           </button>
         </form>

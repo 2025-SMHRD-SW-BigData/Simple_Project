@@ -1,4 +1,13 @@
 /* src/style/map.css */
+
+/* 0. Paperlogy-8ExtraBold 폰트 선언 (최상단) */
+@font-face {
+  font-family: 'Paperlogy-8ExtraBold';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-8ExtraBold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+}
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -10,12 +19,25 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* 앱 형식 컨테이너 (높이만 늘림) */
+/* 중앙 정렬 */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f2f5;
+  /* 전역 폰트를 Paperlogy-8ExtraBold로 지정 */
+  font-family: 'Paperlogy-8ExtraBold', sans-serif;
+}
+
+/* 앱 컨테이너 */
 .map-screen-container {
   position: relative;
-  width: 390px;
-  height: 900px;          /* 기존 844px → 900px */
-  margin: 20px auto;
+  width: 450px;
+  height: 950px;
   background: #ffffff;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
@@ -24,59 +46,110 @@
 
 /* Header */
 .map-header {
-  position: absolute; top: 0; left: 0;
+  position: absolute;
+  top: 0; left: 0;
   width: 100%; height: 100px;
   background: #34B3EB;
-  display: flex; align-items: center; padding: 0 16px;
-  box-sizing: border-box;
+  z-index: 20;
 }
-.back-btn {
-  width: 40px; height: 40px;
-  background: #ffffff; border: none; border-radius: 8px;
-  color: #34B3EB; font-size: 24px;
+.back-icon {
+  position: absolute;
+  top: 50%; left: 16px;
+  transform: translateY(-50%);
+  width: 24px; height: 24px;
+  font-size: 20px;
+  color: #34B3EB;
+  background: #fff;
+  border: none;
+  border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
-  margin-right: 12px; cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  cursor: pointer;
+  z-index: 30;
 }
 .map-title {
-  margin: 0; color: #ffffff; font-size: 20px; font-weight: 500;
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
+  z-index: 30;
 }
 
-/* Search Bar */
+/* ➊ 지도 + 검색 래퍼 */
+.map-wrapper {
+  position: absolute;
+  top: 100px;       /* 헤더 바로 아래 */
+  bottom: 70px;     /* 네비 바로 위 */
+  left: 0; right: 0;
+  z-index: 5;
+}
+
+/* ➋ 검색창 (지도 위 오버레이) */
 .search-bar {
-  position: absolute; top: 120px; left: 0;
-  width: 100%; height: 48px; padding: 0 16px;
-  background: #fff; box-sizing: border-box;
+  position: absolute;
+  top: 10px;        /* 래퍼 상단에서 10px */
+  left: 16px; right: 16px;
+  height: 48px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  z-index: 10;
+}
+.search-icon {
+  font-size: 20px;
+  color: #888;
+  margin-right: 8px;
 }
 .search-bar input {
-  width: 100%; height: 36px;
-  border: 1px solid #ccc; border-radius: 18px;
-  padding: 0 12px; font-size: 14px; box-sizing: border-box;
+  flex: 1;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  font-family: 'Paperlogy-8ExtraBold', sans-serif;
 }
 
-/* Map Container (검색창 바로 아래에서 시작) */
+/* ➌ 지도 영역 (래퍼 안에서 채움) */
 .map-container {
   position: absolute;
-  top: 168px;             /* 120px (검색바 top) + 48px (검색바 height) */
-  bottom: 60px;
-  left: 0; right: 0;
+  top: 0; left: 0;
+  right: 0; bottom: 0;
+  z-index: 1;
 }
 
-/* Info Panel */
+/* ◉ 정보 패널 (예전 스타일로 복구) */
 .info-panel {
-  position: absolute; top: 150px; right: 0; bottom: 60px;
-  width: 280px; background: rgba(0,0,0,0.6); color: #fff;
-  border-radius: 0 0 0 12px; padding: 1.5em 1em;
+  position: absolute;
+  top: 158px;      /* 헤더100 + 검색48 + 간격10 */
+  right: 0;
+  bottom: 70px;    /* 네비 바로 위 */
+  width: 280px;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  border-radius: 0 0 0 12px;
+  padding: 1.5em 1em;
   box-shadow: -4px 0 16px rgba(0,0,0,0.3);
-  display: flex; flex-direction: column;
-  align-items: center; gap: 0.8em;
-  z-index: 20; overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8em;
+  overflow-y: auto;
+  z-index: 15;
 }
 .location-name,
 .species-list,
 .weather-temp,
 .weather-desc,
 .weather-wind-text {
-  margin: 0; text-align: center;
+  margin: 0;
+  text-align: center;
 }
 .location-name { font-size: 1.2rem; font-weight: 600; color: #34B3EB; }
 .species-list  { font-size: 0.9rem; color: #ddd; }
@@ -84,32 +157,54 @@
 .weather-icon  { width: 48px; height: 48px; }
 .weather-desc,
 .weather-wind-text { font-size: 1rem; }
-
 .close-btn {
-  align-self: center; margin-top: 1em;
-  padding: 0.6em 1em; border: 1px solid #34B3EB;
-  border-radius: 8px; background: transparent;
-  color: #34B3EB; cursor: pointer;
+  margin-top: 1em;
+  padding: 0.6em 1em;
+  border: 1px solid #34B3EB;
+  border-radius: 8px;
+  background: transparent;
+  color: #34B3EB;
+  cursor: pointer;
+  z-index: 16;
 }
 .close-btn:hover {
-  background-color: #34B3EB; color: #ffffff;
+  background-color: #34B3EB;
+  color: #fff;
 }
 
-.bottom-nav {
-  position: absolute; bottom: 0; left: 0;
-  width: 100%; height: 60px; background: #fff;
-  display: flex; justify-content: space-around;
-  align-items: center; border-top: 1px solid #ddd;
+/* Bottom Navigation */
+.bottom-nav-final {
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 100%; height: 70px;
+  background: #fff;
+  border-top: 1px solid #dbdbdb;
+  display: flex;
+  z-index: 20;
 }
-.bottom-nav button {
-  background: none; border: none; font-size: 24px;
+.bottom-nav-final button {
+  flex: 1;
+  background: none;
+  border: none;
   cursor: pointer;
+  color: #333;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 4px;
+  font-size: 28px;
+}
+.nav-label {
+  font-size: 12px;
+  color: #555;
 }
 
+/* Loading Overlay */
 .loading-overlay {
-  position: absolute; top: 0; left: 0;
+  position: absolute;
+  top: 0; left: 0;
   width: 100%; height: 100%;
   background: rgba(0,0,0,0.3);
-  display: flex; justify-content: center;
-  align-items: center; font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: #fff;
+  z-index: 50;
 }

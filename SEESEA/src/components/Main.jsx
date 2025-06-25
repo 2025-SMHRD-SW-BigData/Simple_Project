@@ -7,6 +7,12 @@ const Main = () => {
   const navigate = useNavigate();
   return (
     <div className="screen-container">
+      <br></br>
+      <br></br>
+      <br></br>
+      <br></br>
+      <br></br>
+      <br></br>
       <div
         className="logo-circle"
         style={{

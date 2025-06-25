@@ -1,25 +1,29 @@
-/* ---------------------------------------- */
-/* 1. html/body/root 기본 세팅            */
-/* ---------------------------------------- */
-html, body, #root {
-  height: 100%;
+/* 0. Paperlogy-8ExtraBold 폰트 선언 (최상단) */
+@font-face {
+  font-family: 'Paperlogy-8ExtraBold';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-8ExtraBold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
 }
 
-body {
+/* 1. 전역 세팅 */
+html, body, #root {
+  height: 100%;
   margin: 0;
   background-color: #f0f2f5;
+}
+body {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: Arial, sans-serif;
+  /* 본문 기본 폰트를 Paperlogy-8ExtraBold로 지정 */
+  font-family: 'Paperlogy-8ExtraBold', sans-serif;
 }
 
-/* ---------------------------------------- */
-/* 2. 앱 화면 컨테이너                    */
-/* ---------------------------------------- */
+/* 2. 앱 화면 컨테이너 (450×950, 중앙 배치) */
 .login-screen-container {
-  width: 390px;
-  height: 844px;
+  width: 450px;
+  height: 950px;
   background-color: #ffffff;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
@@ -28,60 +32,59 @@ body {
 
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* 아래로 쌓이게 */
+  justify-content: flex-start;
   align-items: center;
-  padding: 20px;
+
+  padding: 0;
 }
 
-/* ---------------------------------------- */
-/* 3. 뒤로가기 아이콘                      */
-/* ---------------------------------------- */
-.back-icon {
-  position: absolute;
-  top: 20px;
-  left: 20px;
+/* 3. 뒤로가기 아이콘 (로그인 화면 전용) */
+.login-screen-container .back-icon {
+  position: absolute !important;
+  top: 45px !important;
+  left: 20px !important;
   width: 24px;
   height: 24px;
   cursor: pointer;
+  z-index: 999;
 }
 
-/* ---------------------------------------- */
-/* 4. 내부 래퍼 & 타이틀                   */
-/* ---------------------------------------- */
+/* 4. 내부 래퍼 & 타이틀 */
 .login-inner {
   width: 100%;
   max-width: 320px;
-
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  margin-top: 32px; /* ← 뒤로가기 버튼과 제목 사이 간격 */
+  margin-top: 32px; /* 뒤로가기 버튼과 제목 사이 간격 */
 }
 
-/* 타이틀만 왼쪽 정렬 */
+/* 타이틀과 서브타이틀 */
 .login-title,
 .login-subtitle {
   width: 100%;
   text-align: left;
+  margin: 0;
+  /* 모두 Paperlogy 폰트로 지정 */
+  font-family: 'Paperlogy-8ExtraBold', sans-serif;
 }
 
+/* 메인 타이틀 */
 .login-title {
   color: #34B3EB;
   font-size: 28px;
   font-weight: bold;
-  margin: 0 0 6px; /* 기존 margin-top:60px 제거, margin-bottom만 6px */
+  margin-bottom: 6px;
 }
 
+/* 서브타이틀 */
 .login-subtitle {
   font-size: 14px;
   color: #666;
-  margin: 0 0 24px;
+  margin-bottom: 24px;
 }
 
-/* ---------------------------------------- */
-/* 5. 입력 폼                             */
-/* ---------------------------------------- */
+/* 5. 입력 폼 */
 .login-form {
   width: 100%;
   display: flex;
@@ -93,8 +96,6 @@ body {
   width: 100%;
   margin-bottom: 18px;
 }
-
-/* 라벨만 왼쪽 정렬 */
 .input-group label {
   display: block;
   width: 100%;
@@ -102,8 +103,8 @@ body {
   font-size: 14px;
   color: #333;
   text-align: left;
+  font-family: 'Paperlogy-8ExtraBold', sans-serif;
 }
-
 .input-group input {
   width: 100%;
   height: 48px;
@@ -111,20 +112,18 @@ body {
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  font-family: 'Paperlogy-8ExtraBold', sans-serif;
 }
-
-/* 비밀번호 찾기 링크 */
 .forgot-pw {
   align-self: flex-end;
   font-size: 12px;
   color: #888;
   margin-bottom: 20px;
   cursor: pointer;
+  font-family: 'Paperlogy-8ExtraBold', sans-serif;
 }
 
-/* ---------------------------------------- */
-/* 6. 소셜 로그인 아이콘 그룹               */
-/* ---------------------------------------- */
+/* 6. 소셜 로그인 아이콘 그룹 */
 .social-login-icons {
   display: flex;
   justify-content: center;
@@ -133,7 +132,6 @@ body {
   max-width: 320px;
   margin: 24px 0;
 }
-
 .sns-icon-btn {
   width: 64px;
   height: 64px;
@@ -145,15 +143,12 @@ body {
   align-items: center;
   cursor: pointer;
 }
-
 .sns-icon-btn img {
   width: 32px;
   height: 32px;
 }
 
-/* ---------------------------------------- */
-/* 7. 로그인 버튼                          */
-/* ---------------------------------------- */
+/* 7. 로그인 버튼 */
 .login-btn {
   width: 100%;
   height: 48px;
@@ -164,22 +159,21 @@ body {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  margin-top: 0;
   margin-bottom: 32px;
+  font-family: 'Paperlogy-8ExtraBold', sans-serif;
 }
 
-/* ---------------------------------------- */
-/* 8. 회원가입 링크                        */
-/* ---------------------------------------- */
+/* 8. 회원가입 링크 */
 .signup-link {
+  width: 100%;
   font-size: 13px;
   color: #555;
   text-align: center;
-  width: 100%;
+  font-family: 'Paperlogy-8ExtraBold', sans-serif;
 }
-
 .signup-link span {
   color: #34B3EB;
   font-weight: bold;
   cursor: pointer;
+  font-family: 'Paperlogy-8ExtraBold', sans-serif;
 }

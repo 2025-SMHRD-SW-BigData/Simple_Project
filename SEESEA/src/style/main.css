@@ -1,76 +1,65 @@
-@import url('https://fonts.googleapis.com/css2?family=Rammetto+One&display=swap');
+/* src/style/global.css */
 
-/*
-  ========================================
-  See Sea Web - 고정 레이아웃 스타일시트
-  ========================================
-  - 이 웹사이트는 화면 크기와 상관없이 항상
-    동일한 크기의 세로 화면으로 보입니다.
-*/
+/* 0. Paperlogy-8ExtraBold 폰트 선언 (파일 최상단에!) */
+@font-face {
+  font-family: 'Paperlogy-8ExtraBold';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-8ExtraBold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+}
 
-/* 1. 기본 스타일 및 전체 페이지 배경 설정 */
+/* ---------------------------------------- */
+/* 1) 기본 리셋 및 전체 페이지 배경         */
+/* ---------------------------------------- */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
-
 html {
   height: 100%;
 }
-
-/* body를 무대로 사용하여 .screen-container를 중앙 정렬 */
 body {
   height: 100%;
-  font-family: Arial, sans-serif;
-  
-  /* 화면 중앙에 배치하기 위한 Flexbox 설정 */
+  /* 전역 폰트를 Paperlogy-8ExtraBold로 지정 */
+  font-family: 'Paperlogy-8ExtraBold', sans-serif;
   display: flex;
-  justify-content: center; /* 가로 중앙 */
-  align-items: center;    /* 세로 중앙 */
-
-  /* 컨테이너 바깥쪽 배경색 (살짝 어둡게) */
-  background-color: #f0f2f5; 
-}
-
-
-/* 2. 웹사이트 본체 (.screen-container) 스타일 */
-/* 이 부분이 실제 보이는 '스마트폰' 화면이 됩니다. */
-.screen-container {
-  /* 스마트폰과 유사한 고정 크기 지정 */
-  width: 390px;  /* iPhone 13/14 Pro 가로 크기 */
-  height: 844px; /* iPhone 13/14 Pro 세로 크기 */
-
-  /* 화면이 너무 작아질 경우를 대비한 최대값 설정 */
-  max-width: 100%;
-  max-height: 100%;
-
-  /* 기존 배경색과 스타일 유지 */
-  background-color: #34B3EB; 
-  display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 20px;
-
-  /* 추가적인 디자인 요소 */
-  position: relative; /* 안정적인 위치 기준점 */
-  border-radius: 20px; /* 둥근 모서리로 폰 느낌 주기 */
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* 입체감을 주는 그림자 */
-  overflow: hidden; /* 내용이 넘칠 경우 잘라내서 모양 유지 */
+  background-color: #f0f2f5;
 }
 
+/* ---------------------------------------- */
+/* 2) .screen-container 스타일             */
+/* ---------------------------------------- */
+.screen-container {
+  width: 450px;
+  height: 900px;
+  max-width: 100%;
+  max-height: 100%;
+  background-color: #34B3EB;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  position: relative;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  overflow: hidden;
+}
 
-/* 3. 내부 컴포넌트 스타일 (수정 없음) */
+/* ---------------------------------------- */
+/* 3) 로고 & 타이틀 등 내부 컴포넌트        */
+/* ---------------------------------------- */
 .logo-circle {
   width: 250px;
   height: 250px;
-  background-color: #9EE4F9;
+  background-color: #9ee4f9;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
   margin-bottom: 10px;
 }
 
@@ -79,20 +68,23 @@ body {
   height: auto;
 }
 
+/* 메인 타이틀도 Paperlogy로 통일 */
 .main-title {
-  font-family: 'Rammetto one', sans-serif !important;
+  font-family: 'Paperlogy-8ExtraBold', sans-serif;
   font-size: 3.5rem;
-  font-weight: 400;
   color: white;
-  text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
+  text-shadow: 3px 3px 5px rgba(0,0,0,0.2);
   margin-bottom: 25px;
 }
 
+/* ---------------------------------------- */
+/* 4) 버튼 그룹 및 버튼 스타일            */
+/* ---------------------------------------- */
 .button-group {
   display: flex;
   flex-direction: column;
   gap: 15px;
-  width: 90%; /* 컨테이너 너비의 90% */
+  width: 90%;
   max-width: 300px;
 }
 
@@ -101,21 +93,23 @@ body {
   border: none;
   border-radius: 12px;
   color: white;
+  /* 버튼 폰트도 Paperlogy */
+  font-family: 'Paperlogy-8ExtraBold', sans-serif;
   font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0, 77, 128, 0.3);
-  background: linear-gradient(to bottom, #1AB0FF, #0099FF);
+  background: linear-gradient(to bottom, #1ab0ff, #0099ff);
+  box-shadow: 0 4px 6px rgba(0,77,128,0.3);
   transition: all 0.2s ease-in-out;
 }
 
 .btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 10px rgba(0, 77, 128, 0.4);
+  box-shadow: 0 6px 10px rgba(0,77,128,0.4);
   filter: brightness(1.1);
 }
 
 .btn:active {
   transform: translateY(1px);
-  box-shadow: 0 2px 4px rgba(0, 77, 128, 0.3);
+  box-shadow: 0 2px 4px rgba(0,77,128,0.3);
 }

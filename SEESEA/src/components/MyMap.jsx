@@ -1,8 +1,12 @@
-// src/components/MyMap.jsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate }                from 'react-router-dom';
 import { Map, MapMarker }             from 'react-kakao-maps-sdk';
 import * as XLSX                      from 'xlsx';
+import { IoArrowBack }                from 'react-icons/io5';
+import { FiSearch }                   from 'react-icons/fi';
+import { FaFishFins }                 from 'react-icons/fa6';
+import { BsPlusSquare }               from 'react-icons/bs';
+import { GoLocation }                 from 'react-icons/go';
 import '../style/map.css';
 
 const BASE_URL   = import.meta.env.BASE_URL;
@@ -41,11 +45,14 @@ const descriptionMap = {
 };
 
 export default function MyMap() {
-  const navigate = useNavigate();
+  const navigate                   = useNavigate();
   const [points, setPoints]       = useState([]);
-  const [selected, setSelected]   = useState(null);
-  const [weatherInfo, setWeather] = useState(null);
+  const [filteredPoints, setFilteredPoints] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selected, setSelected]     = useState(null);
+  const [weatherInfo, setWeather]   = useState(null);
 
+  // 1) 엑셀 데이터 로딩
   useEffect(() => {
     (async () => {
       try {
@@ -54,11 +61,10 @@ export default function MyMap() {
             const res = await fetch(url);
             const buf = await res.arrayBuffer();
             const header = new TextDecoder().decode(buf.slice(0, 20));
-            if (/^<!doctype html>/i.test(header)) return null;
-            return buf;
+            return /^<!doctype html>/i.test(header) ? null : buf;
           })
         );
-        const valid = buffers.filter(b => b);
+        const valid = buffers.filter(Boolean);
         const rows = valid.flatMap(buf => {
           const wb = XLSX.read(new Uint8Array(buf), { type: 'array' });
           return XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
@@ -66,19 +72,33 @@ export default function MyMap() {
         const mapped = rows
           .map((r, i) => ({
             id:      i,
-            name:    r['낚시터명'] || `포인트${i + 1}`,
+            name:    r['낚시터명']  || `포인트${i + 1}`,
             lat:     parseFloat(r['WGS84위도']  ?? r['위도']),
             lng:     parseFloat(r['WGS84경도'] ?? r['경도']),
-            species: r['주요어종'] || r['주요 어종'] || ''
+            species: r['주요어종']  || r['주요 어종'] || ''
           }))
           .filter(p => !isNaN(p.lat) && !isNaN(p.lng));
         setPoints(mapped);
+        setFilteredPoints(mapped);
       } catch (e) {
         console.error('XLSX 파싱 오류:', e);
       }
     })();
   }, []);
 
+  // 2) 검색어 필터링
+  useEffect(() => {
+    if (!searchTerm) {
+      setFilteredPoints(points);
+    } else {
+      const term = searchTerm.trim().toLowerCase();
+      setFilteredPoints(
+        points.filter(p => p.name.toLowerCase().includes(term))
+      );
+    }
+  }, [searchTerm, points]);
+
+  // 3) 마커 클릭 시 날씨 API 호출
   const handleMarkerClick = async pt => {
     setSelected(pt);
     setWeather(null);
@@ -91,8 +111,8 @@ export default function MyMap() {
       if (!resp.ok) throw new Error(resp.statusText);
       const data = await resp.json();
       const rawDesc = data.weather[0].description.toLowerCase();
-      let desc = descriptionMap[rawDesc] ||
-                 rawDesc.charAt(0).toUpperCase() + rawDesc.slice(1);
+      const desc = descriptionMap[rawDesc] ||
+                   rawDesc.charAt(0).toUpperCase() + rawDesc.slice(1);
       setWeather({
         temp: Number(data.main.temp),
         wind: Number(data.wind.speed),
@@ -113,60 +133,65 @@ export default function MyMap() {
     <div className="map-screen-container">
       {/* Header */}
       <header className="map-header">
-        <button className="back-btn" onClick={() => navigate(-1)}>←</button>
+        <button className="back-icon" onClick={() => navigate(-1)}>
+          <IoArrowBack />
+        </button>
         <h2 className="map-title">지도</h2>
       </header>
 
-      {/* Search Bar */}
-      <div className="search-bar">
-        <input type="text" placeholder="낚시터명 검색하기" />
-      </div>
-
-      {/* Map */}
-      <Map
-        center={{ lat: 36.5, lng: 127.8 }}
-        level={7}
-        style={{ width: '100%', height: '100%' }}
-        className="map-container"
-      >
-        {points.map(pt => (
-          <MapMarker
-            key={pt.id}
-            position={{ lat: pt.lat, lng: pt.lng }}
-            onClick={() => handleMarkerClick(pt)}
+      {/* 지도 + 검색 오버레이 래퍼 */}
+      <div className="map-wrapper">
+        <div className="search-bar">
+          <FiSearch className="search-icon" />
+          <input
+            type="text"
+            placeholder="낚시터명 검색하기"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
           />
-        ))}
-      </Map>
+        </div>
+
+        <Map
+          center={{ lat: 36.5, lng: 127.8 }}
+          level={7}
+          style={{ width: '100%', height: '100%' }}
+          className="map-container"
+        >
+          {filteredPoints.map(pt => (
+            <MapMarker
+              key={pt.id}
+              position={{ lat: pt.lat, lng: pt.lng }}
+              onClick={() => handleMarkerClick(pt)}
+            />
+          ))}
+        </Map>
+      </div>
 
       {/* Info Panel */}
       {selected && (
         <div className="info-panel">
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
+          <br></br>
+          <br></br>
+          <br></br>
+          <br></br>
+          <br></br>
           <h3 className="location-name">{selected.name}</h3>
           {selected.species && (
             <p className="species-list">주요 어종: {selected.species}</p>
           )}
           {weatherInfo && !weatherInfo.error && (
-            <p className="weather-temp">{weatherInfo.temp.toFixed(1)}°C</p>
-          )}
-          {weatherInfo?.icon && (
-            <img
-              className="weather-icon"
-              src={`https://openweathermap.org/img/wn/${weatherInfo.icon}@2x.png`}
-              alt="weather icon"
-            />
-          )}
-          {weatherInfo && !weatherInfo.error && (
-            <p className="weather-desc">{weatherInfo.desc}</p>
-          )}
-          {weatherInfo && !weatherInfo.error && (
-            <p className="weather-wind-text">
-              바람 {weatherInfo.wind.toFixed(1)} m/s
-            </p>
+            <>
+              <p className="weather-temp">{weatherInfo.temp.toFixed(1)}°C</p>
+              <img
+                className="weather-icon"
+                src={`https://openweathermap.org/img/wn/${weatherInfo.icon}@2x.png`}
+                alt="weather icon"
+              />
+              <p className="weather-desc">{weatherInfo.desc}</p>
+              <p className="weather-wind-text">
+                바람 {weatherInfo.wind.toFixed(1)} m/s
+              </p>
+            </>
           )}
           <button className="close-btn" onClick={() => setSelected(null)}>
             닫기
@@ -175,10 +200,16 @@ export default function MyMap() {
       )}
 
       {/* Bottom Navigation */}
-      <nav className="bottom-nav">
-        <button onClick={() => navigate('/')}>🏠</button>
-        <button onClick={() => navigate('/add')}>➕</button>
-        <button onClick={() => navigate('/map')}>📍</button>
+      <nav className="bottom-nav-final">
+        <button onClick={() => navigate('/pokedex')}>
+          <FaFishFins /><span className="nav-label">도감</span>
+        </button>
+        <button onClick={() => navigate('/new')}>
+          <BsPlusSquare /><span className="nav-label">생성</span>
+        </button>
+        <button onClick={() => navigate('/map')}>
+          <GoLocation /><span className="nav-label">지도</span>
+        </button>
       </nav>
     </div>
   );

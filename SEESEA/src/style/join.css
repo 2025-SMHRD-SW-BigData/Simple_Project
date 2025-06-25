@@ -1,4 +1,12 @@
-/* join.css */
+/* src/style/join.css */
+
+/* 0. Paperlogy-8ExtraBold 폰트 선언 (최상단) */
+@font-face {
+  font-family: 'Paperlogy-8ExtraBold';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-8ExtraBold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+}
 
 /* 1. html/body/#root 높이 세팅 */
 html, body, #root {
@@ -12,13 +20,14 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: Arial, sans-serif;
+  /* 본문 기본 폰트를 Paperlogy-8ExtraBold로 지정 */
+  font-family: 'Paperlogy-8ExtraBold', sans-serif;
 }
 
 /* 3. 앱 화면 컨테이너 */
 .join-screen-container {
-  width: 390px;
-  height: 844px;
+  width: 450px;
+  height: 950px;
   background-color: #ffffff;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
@@ -29,17 +38,19 @@ body {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+
   padding: 20px;
 }
 
 /* 4. 뒤로가기 아이콘 */
-.back-icon {
-  position: absolute;
-  top: 20px;
-  left: 20px;
+.join-screen-container .back-icon {
+  position: absolute !important;
+  top: 45px !important;
+  left: 20px !important;
   width: 24px;
   height: 24px;
   cursor: pointer;
+  z-index: 10;
 }
 
 /* 5. 내부 래퍼 */
@@ -53,20 +64,22 @@ body {
 }
 
 /* 6. 타이틀 & 설명 */
-.join-title,
-.join-subtitle {
+/* 메인 타이틀 */
+.join-title {
   width: 100%;
   text-align: left;
-}
-
-.join-title {
+  font-family: 'Paperlogy-8ExtraBold', sans-serif;
   color: #34B3EB;
   font-size: 28px;
   font-weight: bold;
   margin: 0 0 6px;
 }
 
+/* 서브타이틀 */
 .join-subtitle {
+  width: 100%;
+  text-align: left;
+  font-family: 'Paperlogy-8ExtraBold', sans-serif;
   font-size: 14px;
   color: #666;
   margin: 0 0 24px;
@@ -89,6 +102,7 @@ body {
   display: block;
   width: 100%;
   margin-bottom: 6px;
+  font-family: 'Paperlogy-8ExtraBold', sans-serif;
   font-size: 14px;
   color: #333;
   text-align: left;
@@ -98,6 +112,7 @@ body {
   width: 100%;
   height: 48px;
   padding: 0 16px;
+  font-family: 'Paperlogy-8ExtraBold', sans-serif;
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -109,6 +124,7 @@ body {
   height: 48px;
   background-color: #34B3EB;
   color: white;
+  font-family: 'Paperlogy-8ExtraBold', sans-serif;
   font-size: 16px;
   font-weight: bold;
   border: none;
@@ -119,14 +135,16 @@ body {
 
 /* 9. 로그인 링크 */
 .login-link {
+  width: 100%;
+  font-family: 'Paperlogy-8ExtraBold', sans-serif;
   font-size: 13px;
   color: #555;
   text-align: center;
-  width: 100%;
 }
 
 .login-link span {
   color: #34B3EB;
+  font-family: 'Paperlogy-8ExtraBold', sans-serif;
   font-weight: bold;
   cursor: pointer;
 }
