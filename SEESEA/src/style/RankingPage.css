@@ -1,0 +1,132 @@
+.ranking-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+  background-color: #f0f2f5;
+}
+
+.ranking-content {
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.my-ranking-info {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.level-display {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.fish-icon {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+}
+
+.level-text {
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
+  margin-right: 15px;
+}
+
+.progress-bar-container {
+  flex-grow: 1;
+  height: 10px;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #4CAF50; /* Green */
+  border-radius: 5px;
+}
+
+.progress-percent {
+  margin-left: 15px;
+  font-weight: bold;
+  color: #555;
+}
+
+.level-progression {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.level-progression img {
+  width: 30px;
+  height: 30px;
+}
+
+.level-progression span {
+  font-size: 20px;
+  color: #888;
+}
+
+.ranking-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ranking-table th,
+.ranking-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.ranking-table th {
+  background-color: #f8f8f8;
+  font-weight: bold;
+  color: #666;
+}
+
+.ranking-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table-profile-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+  background-color: #fff;
+  border-top: 1px solid #ddd;
+}
+
+.nav-button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #555;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nav-button:hover {
+  color: #007bff;
+}
