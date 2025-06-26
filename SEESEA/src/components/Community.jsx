@@ -12,25 +12,10 @@ import { useNavigate }    from 'react-router-dom';
 import postImage1 from '../assets/fishing-post-woman.jpg';
 import postImage2 from '../assets/fishing-post.jpg';
 import postImage3 from '../assets/fishing-post-esul.jpg';
+import Header from './Header';
 
-// --- 상단 헤더 컴포넌트 ---
-const CommunityHeader = () => (
-  <header className="community-header-final">
-    <div className="header-left-section">
-      <h1 className="header-title-final">See Sea</h1>
-      <div className="profile-main-final">
-        <IoPersonCircleOutline className="profile-pic-final" />
-        <div className="profile-details-final">
-          <button className="nickname-btn-final">닉네임</button>
-          <div className="profile-stats-final">
-            <span>등급</span><span>레벨</span><span>팔로워</span><span>팔로잉</span>
-          </div>
-        </div>
-      </div>
-    </div>
-    <button className="menu-btn-final"><FiMenu /></button>
-  </header>
-);
+
+
 
 // --- 게시물(피드) 컴포넌트 ---
 const Post = ({ author, image, caption, tags, initialLikes, comments }) => {
@@ -93,7 +78,7 @@ const BottomNav = () => {
 // --- 커뮤니티 메인 페이지 ---
 const Community = () => (
   <div className="screen-container community-page">
-    <CommunityHeader />
+    <Header />
     <main className="feed-container-final">
       <Post
         author="바다여신"
