@@ -118,3 +118,12 @@ body {
   transform: translateY(1px);
   box-shadow: 0 2px 4px rgba(0,77,128,0.3);
 }
+
+/* --- 메인 페이지만을 위한 레이아웃 스타일 --- */
+.main-page-layout {
+  background-color: #34B3EB; /* 파란색 배경 지정 */
+  
+  /* 내용물을 가로, 세로 모두 정중앙에 배치! */
+  justify-content: center;
+  align-items: center;
+}
