@@ -61,13 +61,7 @@ const RankingPage = () => {
         </table>
       </div>
 
-      <footer className="footer">
-        {/* 하단 네비게이션 버튼 (현재 3개) */}
-        <button className="nav-button">🏠 홈</button>
-        <button className="nav-button">➕ 생성</button>
-        <button className="nav-button">🗺️ 지도</button>
-      </footer>
-    </div>
+      </div>
   );
 };
 
