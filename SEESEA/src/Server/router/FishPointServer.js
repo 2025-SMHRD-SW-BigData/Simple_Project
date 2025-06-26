@@ -43,6 +43,8 @@ app.get('/api/fishpoints', (req, res) => {
   });
 });
 
-app.listen(3001, () => {
-  console.log('FishPoint 서버 실행 중');
-});
+module.exports = app
+
+// app.listen(3001, () => {
+//   console.log('FishPoint 서버 실행 중');
+// });

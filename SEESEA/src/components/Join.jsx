@@ -40,13 +40,13 @@ const Join = () => {
 
   // 서버로 회원가입 정보 전송
   const tryJoin = () => {
-    axios.get('http://localhost:3001/join', {
-      params: {
+    axios.post('http://localhost:3001/join', {
+
         USER_ID: userId,
         PW: password,
         NAME: name,
         AGE: age
-      }
+      
     })
     .then((res) => {
       console.log('서버 응답:', res);
@@ -55,6 +55,12 @@ const Join = () => {
     })
     .catch((err) => {
       console.error('에러 발생:', err);
+      
+    if (err.response && err.response.data && err.response.data.message) {
+    alert(err.response.data.message); // 서버에서 보낸 메시지 띄움
+  } else {
+    alert('회원가입 실패'); // 예외 상황
+  }
       alert('회원가입 실패');
     });
   };

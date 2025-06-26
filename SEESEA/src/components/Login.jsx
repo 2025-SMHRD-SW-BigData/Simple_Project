@@ -8,15 +8,22 @@ import naverIcon  from '../assets/btn_naver.svg';
 
 import axios from 'axios'
 
-  const tryLogin =()=>{
-    axios.post('http://localhost:3001/login')
-    .then((res)=>{
-      console.log(res)
-    })
-      .catch((err) => {
-      console.error('에러 발생:', err);
-    });
+const tryLogin = async (userId,password) => {
+  try {
+    const res = await axios.post('http://localhost:3001/userLogin/login', {
+        USER_ID: userId,
+        PW: password,
+      }
+    );
+    console.log(res);
+    
+    // 예: 로그인 성공 여부가 res.data.success에 있다고 가정
+    return res.data.success;
+  } catch (err) {
+    console.error('에러 발생:', err);
+    return false;
   }
+};
 
 const BackIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24">
@@ -37,9 +44,16 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleBack     = () => navigate(-1);
-  const handleLogin    = e => { e.preventDefault(); console.log(email, pw); 
-    navigate('/community'); 
-    };
+  const handleLogin = async (e) => {
+  e.preventDefault();  // 폼 제출 기본 동작 막기
+
+  const success = await tryLogin(email, pw);
+  if (success) {
+    navigate('/community');
+  } else {
+    alert('로그인 실패');
+  }
+};
   const handleSNSLogin = provider => console.log(`${provider} 로그인`);
   <br></br>
   return (
@@ -110,12 +124,12 @@ const Login = () => {
           </div>
           <br></br>
 
-          <button type="submit" className="login-btn" onClick={() => {navigate('/community')}}>
+          <button type="submit" className="login-btn">
             로그인
           </button>
         </form>
 
-        <Link to="/join" className="signup-link" onClick={tryLogin}>
+        <Link to="/join" className="signup-link">
           계정이 존재하지 않나요? <span>회원가입</span>
         </Link>
       </div>
