@@ -7,6 +7,8 @@ import MyMap from './components/MyMap'
 import './App.css'
 import Community from './components/Community'
 import FeedUpload from './components/FeedUpload'; // FeedUpload 컴포넌트 import
+import Pokedex from './components/Pokedex' // ✨ 1. 이 라인을 추가해서 Pokedex 컴포넌트를 불러옵니다.
+import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -21,6 +23,7 @@ function App() {
           <Route path='/map' element={<MyMap/>}></Route>
           <Route path='/community' element={<Community/>}></Route>
           <Route path='/new' element={<FeedUpload/>}/>
+          <Route path='/pokedex' element={<Pokedex/>}></Route>
         </Routes>
       </div>
     </>
