@@ -59,6 +59,7 @@ const Join = () => {
     });
   };
 
+
   return (
     <div className="join-screen-container">
       <div className="back-icon" onClick={handleBack}>
