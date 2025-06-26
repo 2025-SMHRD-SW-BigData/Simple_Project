@@ -1,13 +1,10 @@
-// src/components/MyMap.jsx
-
 import React, { useEffect, useState } from 'react';
-import { useNavigate }                from 'react-router-dom';
-import { Map, MapMarker }             from 'react-kakao-maps-sdk';
-import { IoArrowBack }                from 'react-icons/io5';
-import { FiSearch }                   from 'react-icons/fi';
-import { FaFishFins }                 from 'react-icons/fa6';
-import { BsPlusSquare }               from 'react-icons/bs';
-import { GoLocation }                 from 'react-icons/go';
+// useNavigate는 더 이상 사용하지 않으므로 삭제해도 됩니다.
+// import { useNavigate } from 'react-router-dom';
+import { Map, MapMarker } from 'react-kakao-maps-sdk';
+import { FiSearch } from 'react-icons/fi';
+// 헤더와 하단 네비에 있던 아이콘들은 모두 삭제해도 됩니다.
+// import { IoArrowBack, FaFishFins, BsPlusSquare, GoLocation } from 'react-icons/io5';
 import '../style/map.css';
 
 // OpenWeatherMap API 키
@@ -15,6 +12,7 @@ const OWM_KEY = '1e9f27d719ce96ae1b72780b550e057f';
 
 // 날씨 설명 한글 매핑
 const descriptionMap = {
+  // ... 기존 descriptionMap 내용은 그대로 유지 ...
   'clear sky': '맑은 하늘',
   'few clouds': '구름 약간',
   'scattered clouds': '흩어진 구름',
@@ -44,17 +42,17 @@ const descriptionMap = {
 };
 
 export default function MyMap() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate(); // navigate도 더 이상 필요 없습니다.
 
-  // 상태 정의
+  // 상태 정의 (그대로 유지)
   const [points, setPoints]             = useState([]);
   const [filteredPoints, setFilteredPoints] = useState([]);
   const [searchTerm, setSearchTerm]     = useState('');
   const [selected, setSelected]         = useState(null);
   const [weatherInfo, setWeather]       = useState(null);
-  const [loading, setLoading]           = useState(true); // 로딩 플래그
+  const [loading, setLoading]           = useState(true);
 
-  // 1) 서버에서 낚시터 정보(fetch) → state 세팅
+  // useEffect, handleMarkerClick 등 모든 로직은 그대로 유지합니다.
   useEffect(() => {
     (async () => {
       try {
@@ -70,7 +68,6 @@ export default function MyMap() {
     })();
   }, []);
 
-  // 2) 검색어 입력에 따라 points 필터링
   useEffect(() => {
     if (!searchTerm) {
       setFilteredPoints(points);
@@ -82,7 +79,6 @@ export default function MyMap() {
     }
   }, [searchTerm, points]);
 
-  // 3) 마커 클릭 시 날씨 API 호출
   const handleMarkerClick = async pt => {
     setSelected(pt);
     setWeather(null);
@@ -107,20 +103,19 @@ export default function MyMap() {
     }
   };
 
+
+  // ✨ 이제 MyMap 컴포넌트는 레이아웃을 감싸는 div 없이, 내용물만 반환합니다.
   return (
-    <div className="map-screen-container">
+    <>
       {/* 로딩 중 오버레이 */}
       {loading && (
         <div className="loading-overlay">로딩 중…</div>
       )}
 
-      {/* 헤더 */}
-      <header className="map-header">
-        <button className="back-icon" onClick={() => navigate(-1)}>
-          <IoArrowBack />
-        </button>
-        <h2 className="map-title">지도</h2>
-      </header>
+      {/* 
+        <header className="map-header"> ... </header>
+        위 헤더 부분은 MainLayout의 Header가 대체하므로 삭제합니다.
+      */}
 
       {/* 지도 + 검색창 */}
       <div className="map-wrapper">
@@ -153,11 +148,7 @@ export default function MyMap() {
       {/* 정보 패널 */}
       {selected && (
         <div className="info-panel">
-          <br></br>
-          <br></br>
-          <br></br>
-          <br></br>
-          <br></br>
+          <br/><br/><br/><br/><br/>
           <h3 className="location-name">{selected.name}</h3>
           {selected.species ? (
             <p className="species-list">주요 어종: {selected.species}</p>
@@ -184,18 +175,10 @@ export default function MyMap() {
         </div>
       )}
 
-      {/* 하단 네비게이션 */}
-      <nav className="bottom-nav-final">
-        <button onClick={() => navigate('/pokedex')}>
-          <FaFishFins /><span className="nav-label">도감</span>
-        </button>
-        <button onClick={() => navigate('/new')}>
-          <BsPlusSquare /><span className="nav-label">생성</span>
-        </button>
-        <button onClick={() => navigate('/map')}>
-          <GoLocation /><span className="nav-label">지도</span>
-        </button>
-      </nav>
-    </div>
+      {/* 
+        <nav className="bottom-nav-final"> ... </nav>
+        위 하단 네비게이션 부분은 MainLayout의 BottomNav가 대체하므로 삭제합니다.
+      */}
+    </>
   );
 }
