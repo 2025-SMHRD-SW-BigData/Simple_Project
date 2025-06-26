@@ -22,7 +22,7 @@ db.connect(err => {
   else console.log('✅ MySQL 연결 성공');
 });
 
-app.get('/api/fishpoints', (req, res) => {
+app.get('/fishPoints', (req, res) => {
   const sql = `
     SELECT 
       F.FISHPOINT_ID AS id,
