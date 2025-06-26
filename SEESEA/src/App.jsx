@@ -6,6 +6,7 @@ import Join from './components/Join'
 import MyMap from './components/MyMap'
 import './App.css'
 import Community from './components/Community'
+import FeedUpload from './components/FeedUpload'; // FeedUpload 컴포넌트 import
 
 function App() {
   const [count, setCount] = useState(0)
@@ -19,6 +20,7 @@ function App() {
           <Route path='/join' element={<Join/>}></Route>
           <Route path='/map' element={<MyMap/>}></Route>
           <Route path='/community' element={<Community/>}></Route>
+          <Route path='/new' element={<FeedUpload/>}/>
         </Routes>
       </div>
     </>

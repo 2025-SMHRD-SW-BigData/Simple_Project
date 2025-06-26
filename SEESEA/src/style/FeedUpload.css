@@ -1,0 +1,103 @@
+/* src/style/FeedUpload.css */
+
+/* --- 페이지 전체 레이아웃 --- */
+.feed-upload-page {
+    background-color: #E6F7FF; /* 피그마의 연한 하늘색 배경 */
+    display: flex;
+    flex-direction: column;
+}
+
+.page-title-bar {
+    padding: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #555;
+    font-family: 'Paperlogy-8ExtraBold', sans-serif;
+}
+
+/* "피드업로드" 글자의 스타일 */
+.upload-page-title {
+    padding: 20px; /* 상단과 좌우에 여백 */
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    font-family: 'Paperlogy-8ExtraBold', sans-serif;
+    text-align: left;
+}
+
+/* --- 메인 콘텐츠 (글 작성 영역) --- */
+.upload-content-area {
+    flex-grow: 1; /* 남은 공간 모두 차지 */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.upload-form-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+}
+
+.upload-author-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+.upload-author-icon { font-size: 32px; color: #ccc; }
+.upload-author-nickname { font-weight: bold; font-family: 'Paperlogy-8ExtraBold', sans-serif; }
+
+.upload-textarea {
+    width: 100%;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    resize: none;
+    font-size: 15px;
+    padding: 10px;
+    margin-bottom: 20px;
+    font-family: 'Paperlogy-8ExtraBold', sans-serif;
+}
+.upload-textarea::placeholder { font-family: 'Paperlogy-8ExtraBold', sans-serif; }
+.upload-textarea:focus { outline: 2px solid #34B3EB; border-color: transparent; }
+
+.upload-file-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #eee;
+    padding: 8px;
+    border-radius: 4px;
+}
+.upload-file-placeholder { color: #999; }
+.upload-file-btn {
+    background-color: #A0A0A0;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'Paperlogy-8ExtraBold', sans-serif;
+}
+
+/* --- 하단 버튼 --- */
+.upload-footer-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 20px;
+}
+.upload-action-btn {
+    border: none;
+    padding: 10px 25px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: 'Paperlogy-8ExtraBold', sans-serif;
+}
+.upload-complete-btn { background-color: #A0A0A0; color: white; }
+.upload-cancel-btn { background-color: #D9D9D9; color: #555; }

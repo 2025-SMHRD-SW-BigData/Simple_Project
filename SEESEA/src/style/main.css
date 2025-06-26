@@ -41,7 +41,7 @@ body {
   width: 450px;
   height: 950px;
   /* margin: 0 auto; → 불필요, body/#root flex에서 이미 중앙 */
-  margin: 0;
+  margin: 20px auto;
 
   background-color: #34B3EB;
   border-radius: 20px;
@@ -49,10 +49,10 @@ body {
 
   display: flex;
   flex-direction: column;
-  justify-content: center; /* 내부 수직 중앙 */
-  align-items: center;     /* 내부 수평 중앙 */
+  /*justify-content: center; /* 내부 수직 중앙 */
+  /*align-items: center;     /* 내부 수평 중앙 */
 
-  padding: 20px;
+  /* padding: 20px; */
   position: relative;
   overflow: hidden;
 }
