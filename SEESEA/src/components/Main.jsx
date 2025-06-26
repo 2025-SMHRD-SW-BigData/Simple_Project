@@ -6,7 +6,7 @@ import '../style/main.css';
 const Main = () => {
   const navigate = useNavigate();
   return (
-    <div className="screen-container">
+    <div className="screen-container main-page-layout">
       <div
         className="logo-circle"
         style={{
