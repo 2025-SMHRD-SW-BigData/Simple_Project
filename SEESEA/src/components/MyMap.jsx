@@ -56,7 +56,7 @@ export default function MyMap() {
   useEffect(() => {
     (async () => {
       try {
-        const res  = await fetch('http://localhost:3001/api/fishpoints');
+        const res  = await fetch('http://localhost:3001/fishPoint/fishpoints');
         const data = await res.json();
         setPoints(data);
         setFilteredPoints(data);
