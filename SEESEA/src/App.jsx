@@ -10,11 +10,13 @@ import FeedUpload from './components/FeedUpload'; // FeedUpload 컴포넌트 imp
 import Pokedex from './components/Pokedex' // ✨ 1. 이 라인을 추가해서 Pokedex 컴포넌트를 불러옵니다.
 import RankingPage from './components/RankingPage'; // RankingPage 컴포넌트 import
 import './App.css'
+import MainLayout from './components/MainLayout';
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
+<<<<<<< HEAD
     <>
       <div className='App'>
         <Routes>
@@ -30,6 +32,27 @@ function App() {
       </div>
     </>
   )
+=======
+    <div className='App'>
+      <Routes>
+        {/* 헤더/네비가 없는 페이지들 */}
+        <Route path='/' element={<Main/>}/>
+        <Route path='/login' element={<Login/>}/>
+        <Route path='/join' element={<Join/>}/>
+        {/* ... 다른 단독 페이지들 ... */}
+
+        {/* ✨ 2. 헤더/네비를 공통으로 사용하는 페이지들을 그룹으로 묶습니다. */}
+        <Route element={<MainLayout />}>
+          <Route path='/community' element={<Community/>}/>
+          <Route path='/pokedex' element={<Pokedex/>}/>
+          <Route path='/map' element={<MyMap/>}/>
+          {/* '/new' 경로는 아직 없지만, 나중에 여기에 추가하면 됩니다. */}
+          {/* <Route path='/new' element={<CreatePage/>}/> */}
+        </Route>
+      </Routes>
+    </div>
+  );
+>>>>>>> 1bf435af65862ba47e7d07b2d4714e323139bf8e
 }
 
-export default App
+export default App;
