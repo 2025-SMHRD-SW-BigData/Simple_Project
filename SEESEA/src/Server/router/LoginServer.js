@@ -19,7 +19,7 @@ let conn = mysql.createConnection({
 
 
 
-//http://localhost:3001/login
+//http://localhost:3001/userLogin/login
 app.post('/login', (req,res)=>{
     console.log('접근 확인')
     console.log('받은 데이터:', req.body)
@@ -48,6 +48,7 @@ console.log(req)
 
 })
 })
-app.listen(3001, () => {
-    console.log('서버 실행 중')
-})
+// app.listen(3001, () => {
+//     console.log('서버 실행 중')
+// })
+module.exports = app

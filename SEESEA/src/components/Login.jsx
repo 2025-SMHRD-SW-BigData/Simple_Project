@@ -10,7 +10,7 @@ import axios from 'axios'
 
 const tryLogin = async (userId,password) => {
   try {
-    const res = await axios.post('http://localhost:3001/login', {
+    const res = await axios.post('http://localhost:3001/userLogin/login', {
         USER_ID: userId,
         PW: password,
       }
