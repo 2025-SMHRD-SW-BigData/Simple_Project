@@ -2,10 +2,11 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../style/Header.css'; // 헤더 전용 CSS 파일을 만들어서 스타일도 분리
+import '../style/Header.css';
 
 import { FiMenu } from 'react-icons/fi';
 import { IoPersonCircleOutline } from 'react-icons/io5';
+import fishLevel2 from '../assets/fish_level2.png'; // fish_level2 이미지 import
 
 const Header = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -17,13 +18,12 @@ const Header = () => {
 
   const handleRankingClick = () => {
     navigate('/ranking');
-    setShowMenu(false); // 메뉴 닫기
+    setShowMenu(false);
   };
 
   const handleLogoutClick = () => {
-    // 로그아웃 로직 추가 (예: 토큰 삭제, 로그인 페이지로 리다이렉트)
     console.log('로그아웃');
-    setShowMenu(false); // 메뉴 닫기
+    setShowMenu(false);
   };
 
   return (
@@ -33,11 +33,25 @@ const Header = () => {
         <div className="profile-main">
           <IoPersonCircleOutline className="profile-pic" />
           <div className="profile-details">
-            <button className="nickname-btn">닉네임</button>
-            <div className="profile-stats">
-              <span>등급</span><span>레벨</span><span>팔로워</span><span>팔로잉</span>
+            <div className="nickname-and-level">
+              <img src={fishLevel2} alt="Level Fish" className="level-fish-icon" /> {/* 물고기 등급 이미지 */}
+              <span className="nickname-text">닉네임</span> {/* 닉네임 텍스트 */}
             </div>
           </div>
+        </div>
+      </div>
+      <div className="profile-stats-new"> {/* 이 블록을 밖으로 이동 */}
+        <div className="stat-item">
+          <span className="stat-label">레벨</span>
+          <span className="stat-value">2</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-label">팔로워</span>
+          <span className="stat-value">52</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-label">팔로잉</span>
+          <span className="stat-value">66</span>
         </div>
       </div>
       <button className="menu-btn" onClick={handleMenuToggle}><FiMenu /></button>

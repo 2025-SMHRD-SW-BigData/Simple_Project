@@ -2,13 +2,13 @@
     background-color: #34B3EB;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-between; /* 요소들을 양 끝으로 정렬 */
     width: 100%;
     box-sizing: border-box;
     padding: 10px 0;
     margin: 0;
     color: white;
-    position: relative; /* 팝업 메뉴 위치 지정을 위해 추가 */
+    position: relative;
 }
 .header-left-section {
     display: flex;
@@ -22,27 +22,66 @@
     margin: 0;
     color: #ffffff;
 }
-.profile-main { display: flex; align-items: center; }
-.profile-pic { font-size: 50px; color: #aae0f9; margin-right: 12px; }
-.profile-details { display: flex; flex-direction: column; align-items: flex-start; }
-.nickname-btn {
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    padding: 5px 12px;
-    border-radius: 15px;
-    font-family: 'Paperlogy-8ExtraBold', sans-serif;
-    font-size: 13px;
-    font-weight: bold;
-    margin-bottom: 6px;
-    cursor: pointer;
-}
-.profile-stats {
+.profile-main {
     display: flex;
-    gap: 12px;
-    font-family: 'Paperlogy-8ExtraBold', sans-serif;
-    font-size: 12px;
+    align-items: center;
+    margin-top: 5px;
 }
+.profile-pic {
+    font-size: 50px;
+    color: #aae0f9;
+    margin-right: 12px;
+}
+.profile-details {
+    display: flex;
+    flex-direction: column; /* 다시 column으로 변경 */
+    align-items: flex-start; /* 왼쪽 정렬 */
+}
+
+.nickname-and-level {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.level-fish-icon {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+}
+
+.nickname-text {
+    font-family: 'Paperlogy-8ExtraBold', sans-serif;
+    font-size: 20px;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.profile-stats-new {
+    display: flex;
+    gap: 25px;
+    margin-left: auto; /* 오른쪽으로 밀어내기 */
+    padding-top: 25px;
+    padding-right: 15px; /* 오른쪽 여백 */
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 다시 중앙 정렬 */
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #aae0f9;
+}
+
+.stat-value {
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffffff;
+}
+
 .menu-btn {
     background: none;
     border: none;
@@ -54,7 +93,7 @@
 
 .menu-popup {
     position: absolute;
-    top: 100%; /* 헤더 바로 아래에 위치 */
+    top: 100%;
     right: 15px;
     background-color: #fff;
     border: 1px solid #ddd;
