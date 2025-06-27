@@ -1,12 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import '../style/Pokedex.css';
 import { BsPlusLg } from 'react-icons/bs';
 
-// --- ✨ 1. FishCard 컴포넌트 수정 ---
-// imageUrl이 없을 경우를 대비한 로직을 추가합니다.
 const FishCard = ({ fish }) => (
   <div className="fish-card">
-    {/* imageUrl이 존재하면 이미지를 보여주고, 없으면 '빈 칸' 스타일을 적용합니다. */}
     {fish.imageUrl ? (
       <img src={fish.imageUrl} alt="물고기" className="fish-image" />
     ) : (
@@ -15,8 +12,8 @@ const FishCard = ({ fish }) => (
   </div>
 );
 
-const AddImageCard = ({ onClick }) => (
-    <button className="add-image-card" onClick={onClick}>
+const AddImageCard = () => (
+    <button className="add-image-card">
         <BsPlusLg />
     </button>
 );
@@ -31,24 +28,55 @@ const initialImages = [
 
 const Pokedex = () => {
     const [images, setImages] = useState(initialImages);
+    // ✨ 3. 숨겨진 input 요소에 접근하기 위한 ref를 생성합니다.
+    const fileInputRef = useRef(null);
 
-    // --- ✨ 2. handleAddImage 함수 수정 ---
-    const handleAddImage = () => {
-        // imageUrl이 없는 '빈' 이미지 객체를 만듭니다.
-        const newEmptyImage = {
-            id: Date.now(),
-            imageUrl: null // 또는 undefined
+    // ✨ 4. + 버튼을 클릭했을 때 실행될 함수입니다.
+    const handleAddClick = () => {
+        // ref를 통해 숨겨진 input 요소를 강제로 클릭합니다.
+        fileInputRef.current.click();
+    };
+
+    // ✨ 5. 파일이 선택되었을 때 실행될 함수입니다.
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        if (!file) {
+            return; // 사용자가 파일 선택을 취소한 경우
+        }
+
+        // FileReader를 사용해 선택한 이미지를 미리보기로 만듭니다.
+        const reader = new FileReader();
+        reader.readAsDataURL(file); // 파일을 Base64 데이터 URL로 변환
+        reader.onloadend = () => {
+            // 파일 읽기가 완료되면, 새 이미지 객체를 만들어 상태에 추가합니다.
+            const newImage = {
+                id: Date.now(),
+                imageUrl: reader.result // 여기에 Base64 데이터 URL이 들어갑니다.
+            };
+            setImages([newImage, ...images]);
         };
         
-        // '빈' 이미지 객체를 배열의 맨 앞에 추가합니다.
-        setImages([newEmptyImage, ...images]);
-        
-        alert('새로운 이미지 칸이 추가되었습니다!');
+        alert(`'${file.name}' 파일이 선택되었습니다.`);
     };
 
     return (
         <div className="fish-grid">
-            <AddImageCard onClick={handleAddImage} />
+            {/* 
+              ✨ 6. AddImageCard를 div로 감싸고, 클릭 이벤트를 연결합니다.
+            */}
+            <div className="add-card-container" onClick={handleAddClick}>
+                <AddImageCard />
+            </div>
+            
+            {/* ✨ 7. 눈에 보이지 않는 파일 input을 추가합니다. */}
+            <input
+                type="file"
+                accept="image/*" // 이미지 파일만 선택 가능하도록 필터링
+                style={{ display: 'none' }} // 화면에 보이지 않게 숨김
+                ref={fileInputRef} // 위에서 만든 ref와 연결
+                onChange={handleFileChange} // 파일이 선택되면 handleFileChange 함수 실행
+            />
+
             {images.map(image => (
                 <FishCard key={image.id} fish={image} />
             ))}

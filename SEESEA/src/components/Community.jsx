@@ -12,15 +12,24 @@ import postImage3 from '../assets/fishing-post-esul.jpg';
 const Post = ({ author, image, caption, tags, initialLikes, comments }) => {
   const [liked, setLiked]        = useState(false);
   const [likeCount, setLikeCount] = useState(initialLikes);
+  const [isFollowing, setIsFollowing] = useState(false);
   const handleLike = () => {
     setLiked(!liked);
     setLikeCount(liked ? likeCount - 1 : likeCount + 1);
+  };
+   const handleFollow = () => {
+    setIsFollowing(!isFollowing);
   };
   return (
     <article className="post-final">
       <div className="post-author-section">
         <p className="author-nickname">{author}</p>
-        <button className="follow-btn">팔로우</button>
+        <button
+          className={isFollowing ? 'follow-btn following' : 'follow-btn'}
+          onClick={handleFollow}
+        >
+          {isFollowing ? '팔로잉' : '팔로우'}
+        </button>
       </div>
       <div className="post-image-container">
         <img src={image} alt="낚시 조과" className="post-image-final" />
