@@ -83,6 +83,10 @@ body {
   font-weight: bold;
   cursor: pointer;
 }
+.follow-btn.following {
+  background-color: #34B3EB; 
+  color: white; 
+}
 .post-image-container {
   position: relative;
 }

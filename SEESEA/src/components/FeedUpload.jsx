@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from './Header'; // 1. 공통 헤더를 import
 import '../style/FeedUpload.css'; 
 
 import { IoPersonCircleOutline } from "react-icons/io5";
@@ -39,8 +38,7 @@ const FeedUpload = ({ onUpload }) => { // 2. onUpload 함수를 props로 받음
     };
 
     return (
-        <div className="screen-container feed-upload-page">
-            <Header /> {/* 공통 헤더 사용 */}
+        <div className="feed-upload-page">
             <h2 className="upload-page-title">피드업로드</h2>
                 <main className="upload-content-area">
                                 

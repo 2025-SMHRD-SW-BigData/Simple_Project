@@ -29,8 +29,8 @@ function App() {
           <Route path='/community' element={<Community/>}/>
           <Route path='/pokedex' element={<Pokedex/>}/>
           <Route path='/map' element={<MyMap/>}/>
-          {/* '/new' 경로는 아직 없지만, 나중에 여기에 추가하면 됩니다. */}
-          {/* <Route path='/new' element={<CreatePage/>}/> */}
+          <Route path='/new' element={<FeedUpload/>}/>
+          <Route path='/ranking' element={<RankingPage/>}/>
         </Route>
       </Routes>
     </div>
