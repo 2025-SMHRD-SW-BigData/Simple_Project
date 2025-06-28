@@ -2,8 +2,21 @@ import React, { useState, useRef } from 'react';
 import '../style/Pokedex.css';
 import { BsPlusLg } from 'react-icons/bs';
 
-const FishCard = ({ fish }) => (
-  <div className="fish-card">
+const ImageModal = ({ imageUrl, onClose }) => {
+    return (
+        <div className="image-modal-overlay" onClick={onClose}>
+            <img 
+                src={imageUrl} 
+                alt="Enlarged view" 
+                className="enlarged-image"
+                onClick={(e) => e.stopPropagation()} 
+            />
+        </div>
+    );
+};
+
+const FishCard = ({ fish, onClick }) => (
+  <div className="fish-card" onClick={onClick}>
     {fish.imageUrl ? (
       <img src={fish.imageUrl} alt="물고기" className="fish-image" />
     ) : (
@@ -30,6 +43,8 @@ const Pokedex = () => {
     const [images, setImages] = useState(initialImages);
     // ✨ 3. 숨겨진 input 요소에 접근하기 위한 ref를 생성합니다.
     const fileInputRef = useRef(null);
+
+    const [selectedImage, setSelectedImage] = useState(null);
 
     // ✨ 4. + 버튼을 클릭했을 때 실행될 함수입니다.
     const handleAddClick = () => {
@@ -60,6 +75,7 @@ const Pokedex = () => {
     };
 
     return (
+        <>
         <div className="fish-grid">
             {/* 
               ✨ 6. AddImageCard를 div로 감싸고, 클릭 이벤트를 연결합니다.
@@ -78,9 +94,16 @@ const Pokedex = () => {
             />
 
             {images.map(image => (
-                <FishCard key={image.id} fish={image} />
+                <FishCard key={image.id} fish={image} onClick={() => setSelectedImage(image.imageUrl)} />
             ))}
         </div>
+        {selectedImage && (
+                <ImageModal 
+                    imageUrl={selectedImage} 
+                    onClose={() => setSelectedImage(null)} 
+                />
+            )}
+        </>
     );
 };
 

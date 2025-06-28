@@ -23,6 +23,7 @@ const Header = () => {
 
   const handleLogoutClick = () => {
     console.log('로그아웃');
+    navigate('/');
     setShowMenu(false);
   };
 
