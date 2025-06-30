@@ -1,8 +1,10 @@
 // src/components/Pokedex.jsx
+
 import React, { useState, useEffect, useRef } from 'react';
-import axios                               from 'axios';
+import axios from 'axios';
 import '../style/Pokedex.css';
-import { BsPlusLg }                        from 'react-icons/bs';
+import { BsPlusLg } from 'react-icons/bs';
+import { FaStar } from 'react-icons/fa';
 
 // 클릭한 이미지를 크게 보여주는 모달
 const ImageModal = ({ imageUrl, onClose }) => (
@@ -26,7 +28,12 @@ const FishCard = ({ fish, onClick }) => (
     )}
     <div className="fish-info">
       <h3 className="fish-name">{fish.name}</h3>
-      <p className="fish-rarity">희귀도: {fish.rarity} ★</p>
+      <div className="fish-rarity">
+        {/* 희귀도 숫자 대신 별 아이콘을 rarity 만큼 렌더링 */}
+        {Array.from({ length: fish.rarity }, (_, i) => (
+          <FaStar key={i} />
+        ))}
+      </div>
     </div>
   </div>
 );

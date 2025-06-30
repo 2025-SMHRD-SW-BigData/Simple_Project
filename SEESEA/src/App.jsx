@@ -1,4 +1,5 @@
 // src/App.jsx
+
 import React, { useState }                 from 'react';
 import { Routes, Route, Navigate }         from 'react-router-dom';
 
@@ -28,25 +29,48 @@ export default function App() {
       <Routes>
         {/* 헤더/네비 없는 페이지 */}
         <Route path="/"    element={<Main />} />
-        <Route path="/login"
-               element={
-                 <Login onLoginSuccess={handleLoginSuccess} />
-               }
+        <Route
+          path="/login"
+          element={
+            <Login onLoginSuccess={handleLoginSuccess} />
+          }
         />
         <Route path="/join" element={<Join />} />
 
         {/* 헤더/네비 공통 레이아웃 */}
         <Route element={<MainLayout />}>
-          <Route path="/community" element={<Community />} />
-          <Route path="/map"       element={<MyMap />} />
-          <Route path="/pokedex"
-                 element={
-                   userId
-                     ? <Pokedex userId={userId} />
-                     : <Navigate to="/login" replace />
-                 }
+          {/* COMMUNITY: userId prop 추가, 로그인 안 되어 있으면 /login 으로 리다이렉트 */}
+          <Route
+            path="/community"
+            element={
+              userId
+                ? <Community userId={userId} />
+                : <Navigate to="/login" replace />
+            }
           />
-          <Route path="/new"     element={<FeedUpload />} />
+
+          <Route path="/map" element={<MyMap />} />
+
+          {/* POKEDEX: 기존대로 */}
+          <Route
+            path="/pokedex"
+            element={
+              userId
+                ? <Pokedex userId={userId} />
+                : <Navigate to="/login" replace />
+            }
+          />
+
+          {/* FEED UPLOAD: userId prop 추가, 로그인 안 되어 있으면 /login */}
+          <Route
+            path="/new"
+            element={
+              userId
+                ? <FeedUpload userId={userId} onUpload={() => {/*optional*/}} />
+                : <Navigate to="/login" replace />
+            }
+          />
+
           <Route path="/ranking" element={<RankingPage />} />
         </Route>
       </Routes>
