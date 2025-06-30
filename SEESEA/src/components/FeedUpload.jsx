@@ -1,41 +1,46 @@
 // File: src/components/FeedUpload.jsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate }   from 'react-router-dom';
 import axios             from 'axios';
 import '../style/FeedUpload.css';
 import { IoPersonCircleOutline } from 'react-icons/io5';
 
 export default function FeedUpload({ userId }) {
-  const navigate = useNavigate();
-  const [caption, setCaption]     = useState('');
-  const [imageFile, setImageFile] = useState(null);
-  const [errorMsg, setErrorMsg]   = useState('');
-  const [userName, setUserName]   = useState('');  // 여기에 이름 저장
+  const navigate     = useNavigate();
+  const fileInputRef = useRef(null);
 
-  // 1) 마운트 시 userId로 한 번만 이름 조회 (경로 수정)
+  const [caption, setCaption]       = useState('');
+  const [imageFiles, setImageFiles] = useState([]);    // 여러 파일 저장
+  const [errorMsg, setErrorMsg]     = useState('');
+  const [userName, setUserName]     = useState('');
+
+  // 마운트 시 회원 이름 조회
   useEffect(() => {
     if (!userId) return;
     axios
-      .get(`http://localhost:3001/community/member/${encodeURIComponent(userId)}`)
-      .then(res => {
-        setUserName(res.data.name);             // { name: "홍길동" } 형태 응답 가정
+      .get(`http://localhost:3001/community/member/${encodeURIComponent(userId)}`, {
+        withCredentials: true
       })
-      .catch(err => {
-        console.error('회원 이름 조회 실패:', err);
-        setUserName(userId);                    // 실패 시 fallback
-      });
+      .then(res => setUserName(res.data.name))
+      .catch(() => setUserName(userId));
   }, [userId]);
 
-  const handleFileChange = e => setImageFile(e.target.files[0] || null);
+  // 파일 선택 처리: 기존 목록에 추가
+  const handleFileChange = e => {
+    const newFiles = Array.from(e.target.files);
+    setImageFiles(prev => [...prev, ...newFiles]);
+    // 같은 파일 재선택 이벤트 발생시키기 위해 value 초기화
+    e.target.value = null;
+  };
 
   const handleSubmit = async () => {
     if (!userId) {
       setErrorMsg('⚠️ 로그인 후 업로드 가능합니다.');
       return;
     }
-    if (!caption || !imageFile) {
-      setErrorMsg('글과 이미지를 모두 입력해주세요.');
+    if (!caption.trim() || imageFiles.length === 0) {
+      setErrorMsg('글과 최소 한 개의 이미지를 입력해주세요.');
       return;
     }
     setErrorMsg('');
@@ -43,18 +48,26 @@ export default function FeedUpload({ userId }) {
     const formData = new FormData();
     formData.append('user_id', userId);
     formData.append('contents', caption);
-    formData.append('image', imageFile);
+    imageFiles.forEach(file => formData.append('images', file));
 
     try {
-      await axios.post('http://localhost:3001/community/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      await axios.post(
+        'http://localhost:3001/community/upload',
+        formData,
+        {
+          headers: { 'Content-Type': 'multipart/form-data' },
+          withCredentials: true
+        }
+      );
       navigate('/community');
     } catch (err) {
-      console.error('업로드 실패:', err);
-      const msg = err.response?.data?.error || '업로드에 실패했습니다. 다시 시도해주세요.';
-      setErrorMsg(msg);
+      console.error('업로드 실패:', err.response?.data || err);
+      setErrorMsg(err.response?.data?.error || '업로드 실패');
     }
+  };
+
+  const removeFile = index => {
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -67,8 +80,7 @@ export default function FeedUpload({ userId }) {
         <div className="upload-form-container">
           <div className="upload-author-info">
             <IoPersonCircleOutline className="upload-author-icon" />
-            {/* userId 대신 userName을 보여줍니다 */}
-            <span className="upload-author-nickname">@{userName}</span>
+            <span className="upload-author-nickname">{userName}</span>
           </div>
 
           <textarea
@@ -80,16 +92,33 @@ export default function FeedUpload({ userId }) {
           />
 
           <div className="upload-file-section">
-            <span className="upload-file-placeholder">
-              {imageFile ? imageFile.name : '파일을 선택해주세요.'}
-            </span>
-            <label htmlFor="file-upload" className="upload-file-btn">
+            <ul className="file-list">
+              {imageFiles.map((file, idx) => (
+                <li key={idx}>
+                  {file.name}
+                  <button
+                    type="button"
+                    className="remove-file-btn"
+                    onClick={() => removeFile(idx)}
+                  >
+                    ×
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <label
+              htmlFor="file-upload"
+              className="upload-file-btn"
+            >
               파일 선택
             </label>
             <input
               id="file-upload"
               type="file"
+              name="images"
               accept="image/*"
+              multiple
+              ref={fileInputRef}
               style={{ display: 'none' }}
               onChange={handleFileChange}
             />

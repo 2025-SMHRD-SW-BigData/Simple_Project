@@ -1,75 +1,211 @@
 // File: src/components/Community.jsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import '../style/Community.css';
+import { useOutletContext } from 'react-router-dom';
 import { FaHeart, FaRegHeart, FaRegComment } from 'react-icons/fa';
+import '../style/Community.css';
 
-const Community = ({ userId }) => {
-  const [posts, setPosts] = useState([]);
+export default function Community() {
+  // MainLayout에서 내려준 context
+  const { userId, setFollowers, setFollowing } = useOutletContext();
+
+  const [posts, setPosts]       = useState([]);
+  const [showComments, setShow] = useState({});
+  const [commentInputs, setCommentInputs] = useState({});
+  const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId) {
+      setErrorMsg('⚠️ 로그인 후 이용해 주세요.');
+      return;
+    }
+    // 피드 + 좋아요·팔로우 상태 포함해서 불러오기
     axios
-      .get(`http://localhost:3001/community/posts?user_id=${encodeURIComponent(userId)}`)
-      .then(res => {
-        // res.data 는 [{ feed_id, author, caption, imageUrl, likeCount, commentCount, isMine, liked }]
-        // 백엔드에서 author는 NAME이었으니, 원한다면 authorId 필드를 추가로 보내도록 백엔드도 약간 수정이 필요합니다.
-        // 우선 여기서 authorId를 author 대신 쓰겠습니다.
-        const withId = res.data.map(item => ({
-          ...item,
-          authorId: item.author,    // 백엔드에서 author에 USER_ID를 넣도록 수정하셨다면 이 줄은 필요 없습니다.
-          // author: item.author,   // NAME을 쓰려면 이대로 두세요.
-        }));
-        setPosts(withId);
-      })
-      .catch(err => console.error('피드 불러오기 실패:', err));
+      .get(
+        `http://localhost:3001/community/posts?user_id=${encodeURIComponent(userId)}`,
+        { withCredentials: true }
+      )
+      .then(res => setPosts(res.data))
+      .catch(() => setErrorMsg('피드 로드에 실패했습니다.'));
   }, [userId]);
 
+  // 좋아요 토글
+  const handleLikeToggle = (feedId, liked, idx) => {
+    const url = `http://localhost:3001/community/${feedId}/like`;
+    const method = liked ? 'delete' : 'post';
+    axios({
+      method,
+      url,
+      data: { user_id: userId },
+      withCredentials: true
+    })
+      .then(() => {
+        setPosts(ps => {
+          const copy = [...ps];
+          copy[idx].liked = !liked;
+          copy[idx].likeCount += liked ? -1 : 1;
+          return copy;
+        });
+      })
+      .catch(err => {
+        if (err.response?.status === 409) {
+          // 이미 누른 좋아요 취소
+          handleLikeToggle(feedId, true, idx);
+        } else {
+          console.error('좋아요 토글 실패:', err);
+        }
+      });
+  };
+
+  // 팔로우 토글
+  const handleFollowToggle = (authorId, following, idx) => {
+    const url    = `http://localhost:3001/community/${encodeURIComponent(authorId)}/follow`;
+    const method = following ? 'delete' : 'post';
+    axios({ method, url, data: { user_id: userId }, withCredentials: true })
+      .then(() => {
+        setPosts(ps => {
+          const copy = [...ps];
+          copy[idx].following = !following;
+          return copy;
+        });
+        setFollowing(f => f + (following ? -1 : 1));
+      })
+      .catch(err => console.error('팔로우 토글 실패:', err));
+  };
+
+  // 댓글 토글 (열기 시 서버에서 기존 댓글 다시 가져오기)
+  const toggleComments = feedId => {
+    setShow(sc => ({ ...sc, [feedId]: !sc[feedId] }));
+    if (!showComments[feedId]) {
+      axios
+        .get(`http://localhost:3001/community/${feedId}/comments`, { withCredentials: true })
+        .then(res => {
+          setPosts(ps =>
+            ps.map(p =>
+              p.feedId === feedId
+                ? { ...p, comments: res.data }
+                : p
+            )
+          );
+        })
+        .catch(err => console.error('댓글 로드 실패:', err));
+    }
+  };
+
+  // 댓글 등록
+  const submitComment = feedId => {
+    const text = (commentInputs[feedId] || '').trim();
+    if (!text) return;
+    axios
+      .post(
+        `http://localhost:3001/community/${feedId}/comment`,
+        { user_id: userId, text },
+        { withCredentials: true }
+      )
+      .then(res => {
+        setPosts(ps =>
+          ps.map(p => {
+            if (p.feedId === feedId) {
+              return {
+                ...p,
+                commentCount: p.commentCount + 1,
+                comments: [...(p.comments || []), res.data]
+              };
+            }
+            return p;
+          })
+        );
+        setCommentInputs(ci => ({ ...ci, [feedId]: '' }));
+      })
+      .catch(err => console.error('댓글 등록 실패:', err));
+  };
+
+  if (errorMsg) return <div className="error-msg">{errorMsg}</div>;
+
   return (
-    <div className="community-container">
-      {posts.length === 0 && <p className="no-posts">등록된 피드가 없습니다.</p>}
-      {posts.map(post => (
-        <article className="post-final" key={post.feed_id}>
+    <>
+      {posts.map((p, idx) => (
+        <article key={p.feedId} className="post-final">
+          {/* 작성자/팔로우 */}
           <div className="post-author-section">
-            {/* USER_ID를 앞에 보여줍니다 */}
-            <p className="author-nickname">{post.authorId}</p>
-            {/* 내 피드가 아니면 팔로우 버튼 */}
-            {!post.isMine && (
-              <button className="follow-btn" onClick={() => {/* 팔로우 로직 */}}>
-                팔로우
+            <p className="author-nickname">{p.author}</p>
+            {!p.isMine && (
+              <button
+                className={p.following ? 'follow-btn following' : 'follow-btn'}
+                onClick={() =>
+                  handleFollowToggle(p.authorId, p.following, idx)
+                }
+              >
+                {p.following ? '팔로잉' : '팔로우'}
               </button>
             )}
           </div>
 
+          {/* 이미지 캐러셀 */}
           <div className="post-image-container">
-            {/* 백엔드가 제공하는 상대경로 앞에 호스트 붙이기 */}
-            <img
-              src={`http://localhost:3001${post.imageUrl}`}
-              alt="피드 이미지"
-              className="post-image-final"
-            />
+            <div className="image-carousel">
+              {p.images.map((url, i) => (
+                <img
+                  key={i}
+                  src={`http://localhost:3001${url}`}
+                  alt="post"
+                  className="post-image-final"
+                />
+              ))}
+            </div>
             <div className="post-caption-overlay-final">
-              <p>
-                {post.caption}
-                <span className="tags"> {post.tags ?? ''}</span>
-              </p>
+              <p>{p.caption}</p>
             </div>
           </div>
 
+          {/* 좋아요 / 댓글 */}
           <div className="post-actions-final">
-            <button className="action-btn-final">
-              {post.liked ? <FaHeart style={{ color: 'red' }} /> : <FaRegHeart />} 
-              <span>{post.likeCount}</span>
+            <button
+              onClick={() => handleLikeToggle(p.feedId, p.liked, idx)}
+              className="action-btn-final"
+            >
+              {p.liked ? <FaHeart style={{ color: 'red' }} /> : <FaRegHeart />} 
+              <span>{p.likeCount}</span>
             </button>
-            <button className="action-btn-final">
-              <FaRegComment /> <span>{post.commentCount}</span>
+            <button
+              onClick={() => toggleComments(p.feedId)}
+              className="action-btn-final"
+            >
+              <FaRegComment /> <span>{p.commentCount}</span>
             </button>
           </div>
+
+          {/* 댓글창 */}
+          {showComments[p.feedId] && (
+            <div className="comments-section">
+              {(p.comments || []).map(c => (
+                <div key={c.commentId} className="comment-item">
+                  <div className="comment-content">
+                    <span className="comment-author">{c.author}:</span> {c.text}
+                  </div>
+                </div>
+              ))}
+              <div className="comment-input-area">
+                <input
+                  type="text"
+                  placeholder="댓글을 입력하세요..."
+                  value={commentInputs[p.feedId] || ''}
+                  onChange={e =>
+                    setCommentInputs(ci => ({
+                      ...ci,
+                      [p.feedId]: e.target.value
+                    }))
+                  }
+                />
+                <button onClick={() => submitComment(p.feedId)}>
+                  등록
+                </button>
+              </div>
+            </div>
+          )}
         </article>
       ))}
-    </div>
+    </>
   );
-};
-
-export default Community;
+}
