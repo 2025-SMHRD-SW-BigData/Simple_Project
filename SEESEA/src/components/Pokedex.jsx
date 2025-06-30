@@ -4,9 +4,26 @@ import axios                               from 'axios';
 import '../style/Pokedex.css';
 import { BsPlusLg }                        from 'react-icons/bs';
 
-const FishCard = ({ fish }) => (
-  <div className="fish-card">
-    <img src={fish.imageUrl} alt={fish.name} className="fish-image" />
+// 클릭한 이미지를 크게 보여주는 모달
+const ImageModal = ({ imageUrl, onClose }) => (
+  <div className="image-modal-overlay" onClick={onClose}>
+    <img
+      src={imageUrl}
+      alt="Enlarged view"
+      className="enlarged-image"
+      onClick={e => e.stopPropagation()}
+    />
+  </div>
+);
+
+// 물고기 카드
+const FishCard = ({ fish, onClick }) => (
+  <div className="fish-card" onClick={onClick}>
+    {fish.imageUrl ? (
+      <img src={fish.imageUrl} alt={fish.name} className="fish-image" />
+    ) : (
+      <div className="fish-image-placeholder"></div>
+    )}
     <div className="fish-info">
       <h3 className="fish-name">{fish.name}</h3>
       <p className="fish-rarity">희귀도: {fish.rarity} ★</p>
@@ -14,6 +31,7 @@ const FishCard = ({ fish }) => (
   </div>
 );
 
+// + 버튼 카드
 const AddImageCard = ({ disabled }) => (
   <button
     className="add-image-card"
@@ -28,9 +46,10 @@ export default function Pokedex({ userId }) {
   const [cards, setCards]         = useState([]);
   const [uploading, setUploading] = useState(false);
   const [errorMsg, setErrorMsg]   = useState('');
+  const [selectedImage, setSelectedImage] = useState(null);
   const fileInputRef              = useRef(null);
 
-  // 카드 목록 로드
+  // 1) 로그인 여부 확인 후 카드 목록 로드
   useEffect(() => {
     if (!userId) {
       setErrorMsg('⚠️ 로그인 후 이용해 주세요.');
@@ -48,6 +67,7 @@ export default function Pokedex({ userId }) {
     });
   }, [userId]);
 
+  // 2) + 버튼 클릭 → 파일 선택 다이얼로그
   const handleAddClick = () => {
     if (uploading) return;
     if (!userId) {
@@ -58,9 +78,11 @@ export default function Pokedex({ userId }) {
     fileInputRef.current.click();
   };
 
+  // 3) 파일이 선택되면 업로드 & 카드 추가
   const handleFileChange = async e => {
     const file = e.target.files?.[0];
     if (!file) return;
+
     setUploading(true);
     setErrorMsg('');
 
@@ -74,8 +96,8 @@ export default function Pokedex({ userId }) {
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );
-      const { card_id, imageUrl, name, rarity } = res.data;
-      setCards(prev => [{ card_id, imageUrl, name, rarity }, ...prev]);
+      const { card_id, imageUrl, name, rarity, hashtags } = res.data;
+      setCards(prev => [{ card_id, imageUrl, name, rarity, hashtags }, ...prev]);
     } catch (err) {
       setErrorMsg(err.response?.data?.error || '카드 생성 중 오류');
     } finally {
@@ -89,10 +111,12 @@ export default function Pokedex({ userId }) {
       {errorMsg && <div className="error-msg">{errorMsg}</div>}
 
       <div className="fish-grid">
+        {/* + 카드 */}
         <div className="add-card-container" onClick={handleAddClick}>
           <AddImageCard disabled={!userId || uploading} />
         </div>
 
+        {/* 숨겨진 파일 input */}
         <input
           type="file"
           accept="image/*"
@@ -101,10 +125,23 @@ export default function Pokedex({ userId }) {
           onChange={handleFileChange}
         />
 
+        {/* 물고기 카드들 */}
         {cards.map(fish => (
-          <FishCard key={fish.card_id} fish={fish} />
+          <FishCard
+            key={fish.card_id}
+            fish={fish}
+            onClick={() => setSelectedImage(fish.imageUrl)}
+          />
         ))}
       </div>
+
+      {/* 모달 */}
+      {selectedImage && (
+        <ImageModal
+          imageUrl={selectedImage}
+          onClose={() => setSelectedImage(null)}
+        />
+      )}
     </div>
   );
 }

@@ -246,7 +246,6 @@ body {
 }
 
 /* 8. 도감 페이지 카드 그리드 및 카드 박스 스타일 */
-
 .fish-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -309,4 +308,49 @@ body {
 .add-card-container .add-image-card svg {
   font-size: 32px;
   color: #a0a0a0;
+}
+
+/* + 아이콘 자체의 스타일 */
+.add-image-card svg {
+  font-size: 40px; /* 아이콘 크기 */
+  color: #a0a0a0;  /* 아이콘 색상 */
+}
+
+/* 모달 오버레이 */
+.image-modal-overlay {
+  position: fixed; /* 화면 스크롤과 상관없이 고정 */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8); /* 80% 투명도의 검은색 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000; /* 다른 모든 요소들보다 위에 있도록 설정 */
+  cursor: pointer; /* 닫을 수 있다는 것을 암시 */
+}
+
+/* 확대된 이미지 스타일 */
+.enlarged-image {
+  max-width: 90%; /* 화면 너비의 90%를 넘지 않도록 */
+  max-height: 90%; /* 화면 높이의 90%를 넘지 않도록 */
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5); /* 입체감을 위한 그림자 */
+  border-radius: 8px; /* 부드러운 모서리 */
+  cursor: default; /* 이미지 위에서는 기본 마우스 커서 */
+
+  /* 나타날 때 부드럽게 커지는 애니메이션 */
+  animation: zoomIn 0.3s ease-in-out;
+}
+
+/* 확대 애니메이션 키프레임 정의 */
+@keyframes zoomIn {
+  from {
+    transform: scale(0.8); /* 시작 시 80% 크기 */
+    opacity: 0;            /* 시작 시 투명 */
+  }
+  to {
+    transform: scale(1);   /* 끝날 때 100% 크기 */
+    opacity: 1;            /* 끝날 때 불투명 */
+  }
 }

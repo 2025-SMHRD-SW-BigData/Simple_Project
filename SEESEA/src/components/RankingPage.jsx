@@ -24,12 +24,12 @@ const RankingPage = () => {
       <div className="ranking-content">
         <div className="my-ranking-info">
           <div className="level-display">
-            <img src={fishLevel1} alt="Fish Icon" className="fish-icon" /> {/* 물고기 아이콘 경로 수정 */}
+            <img src={fishLevel2} alt="Fish Icon" className="fish-icon" /> {/* 물고기 아이콘 경로 수정 */}
             <span className="level-text">Lv 2</span>
             <div className="progress-bar-container">
               <div className="progress-bar" style={{ width: '70%' }}></div> {/* 임시 진행률 */}
             </div>
-            <span className="progress-percent">XX.X %</span>
+            <span className="progress-percent">71.2 %</span>
           </div>
           <div className="level-progression">
             <img src={fishLevel1} alt="Fish Icon 1" />
