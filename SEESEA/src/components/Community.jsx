@@ -1,5 +1,4 @@
 // File: src/components/Community.jsx
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useOutletContext } from 'react-router-dom';
