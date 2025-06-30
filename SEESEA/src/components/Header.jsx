@@ -1,31 +1,50 @@
-// src/components/Header.jsx (새 파일)
+// File: src/components/Header.jsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import '../style/Header.css';
 
 import { FiMenu } from 'react-icons/fi';
 import { IoPersonCircleOutline } from 'react-icons/io5';
-import fishLevel2 from '../assets/fish_level2.png'; // fish_level2 이미지 import
+import fishLevel2 from '../assets/fish_level2.png';
 
-const Header = () => {
+const Header = ({ userId }) => {
   const [showMenu, setShowMenu] = useState(false);
+
+  // ★ 동적 값 상태들
+  const [nickname, setNickname] = useState('닉네임');
+  const [level, setLevel]       = useState(1);
+  const [followers, setFollowers] = useState(0);
+  const [following, setFollowing] = useState(0);
+
   const navigate = useNavigate();
 
-  const handleMenuToggle = () => {
-    setShowMenu(!showMenu);
-  };
+  useEffect(() => {
+    if (!userId) return;
 
-  const handleRankingClick = () => {
-    navigate('/ranking');
-    setShowMenu(false);
-  };
+    // 1) 닉네임
+    axios.get(`http://localhost:3001/community/member/${userId}`)
+      .then(res => setNickname(res.data.name))
+      .catch(() => { /* 그대로 둠 */ });
 
-  const handleLogoutClick = () => {
-    console.log('로그아웃');
-    navigate('/');
-    setShowMenu(false);
-  };
+    // 2) 팔로우 카운트
+    axios.get(`http://localhost:3001/follow/count?user_id=${userId}`)
+      .then(res => {
+        setFollowers(res.data.followers);
+        setFollowing(res.data.following);
+      })
+      .catch(() => { /* 그대로 둠 */ });
+
+    // 3) 레벨
+    axios.get(`http://localhost:3001/profile/level?user_id=${userId}`)
+      .then(res => setLevel(res.data.level))
+      .catch(() => { /* 그대로 둠 */ });
+  }, [userId]);
+
+  const handleMenuToggle = () => setShowMenu(v => !v);
+  const handleRankingClick = () => { navigate('/ranking'); setShowMenu(false); };
+  const handleLogoutClick  = () => { navigate('/'); setShowMenu(false); };
 
   return (
     <header className="common-header">
@@ -35,26 +54,33 @@ const Header = () => {
           <IoPersonCircleOutline className="profile-pic" />
           <div className="profile-details">
             <div className="nickname-and-level">
-              <img src={fishLevel2} alt="Level Fish" className="level-fish-icon" /> {/* 물고기 등급 이미지 */}
-              <span className="nickname-text">닉네임</span> {/* 닉네임 텍스트 */}
+              <img src={fishLevel2} alt="Level Fish" className="level-fish-icon" />
+              {/* 하드코딩된 텍스트 대신 state */}
+              <span className="nickname-text">{nickname}</span>
             </div>
           </div>
         </div>
       </div>
-      <div className="profile-stats-new"> {/* 이 블록을 밖으로 이동 */}
+
+      {/* 이 블록 위치와 클래스는 그대로 유지 */}
+      <div className="profile-stats-new">
         <div className="stat-item">
           <span className="stat-label">레벨</span>
-          <span className="stat-value">2</span>
+          {/* 하드코딩된 '2' → state */}
+          <span className="stat-value">{level}</span>
         </div>
         <div className="stat-item">
           <span className="stat-label">팔로워</span>
-          <span className="stat-value">52</span>
+          {/* '52' → state */}
+          <span className="stat-value">{followers}</span>
         </div>
         <div className="stat-item">
           <span className="stat-label">팔로잉</span>
-          <span className="stat-value">66</span>
+          {/* '66' → state */}
+          <span className="stat-value">{following}</span>
         </div>
       </div>
+
       <button className="menu-btn" onClick={handleMenuToggle}><FiMenu /></button>
 
       {showMenu && (
