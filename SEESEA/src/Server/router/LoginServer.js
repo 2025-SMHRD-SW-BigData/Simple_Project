@@ -1,54 +1,40 @@
-const express = require('express')
-const app = express();
-const cors = require('cors')
-const mysql = require('mysql2')
+// routes/LoginServer.js
 
-app.use(cors())
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+const express = require('express');
+const router  = express.Router();
+const mysql   = require('mysql2');
 
-let conn = mysql.createConnection({
-    host : 'project-db-campus.smhrd.com', //='0.0.0.0'
-    port : 3307,
-    user : 'campus_25SW_BigData_p2_4',
-    password : 'smhrd4',
-    database : 'campus_25SW_BigData_p2_4'
-})
+// MySQL 연결 (간단 예시)
+const conn = mysql.createConnection({
+  host     : 'project-db-campus.smhrd.com',
+  port     : 3307,
+  user     : 'campus_25SW_BigData_p2_4',
+  password : 'smhrd4',
+  database : 'campus_25SW_BigData_p2_4'
+});
+conn.connect();
 
-   conn.connect();
+// POST /userLogin/login
+router.post('/login', (req, res) => {
+  console.log('▶▶▶ /userLogin/login 진입', req.body);
 
-
-
-//http://localhost:3001/userLogin/login
-app.post('/login', (req,res)=>{
-    console.log('접근 확인')
-    console.log('받은 데이터:', req.body)
-
-    const JoinId = req.body.USER_ID
-    const JoinPw = req.body.PW
-
-
-let checkID = 'SELECT * FROM Member WHERE USER_ID = ? and PW = ?'
-conn.query(checkID, [JoinId, JoinPw], (err, results) => {
-if(err){
-    console.error(err);
-    return res.status(500).send({ success: false, message: '서버 오류' });
+  const { USER_ID, PW } = req.body;
+  const sql = 'SELECT * FROM Member WHERE USER_ID = ? AND PW = ?';
+  conn.query(sql, [USER_ID, PW], (err, results) => {
+    if (err) {
+      console.error('로그인 DB 오류:', err);
+      return res.status(500).json({ success: false, message: '서버 오류' });
     }
-
-if (results.length > 0) {
-    console.log('로그인 성공');
-    return res.send({ success: true, message: '로그인 성공' })
-}else{
-    console.log('로그인 실패')
-    return res.status(401).send({ success: false, message: '아이디 또는 비밀번호가 일치하지 않습니다.' });
+    if (results.length > 0) {
+      // 세션에 로그인 정보 저장
+      req.session.userId = USER_ID;
+      console.log('로그인 성공, 세션에 userId 저장:', USER_ID);
+      return res.json({ success: true, message: '로그인 성공' });
+    } else {
+      console.log('로그인 실패: 아이디/비번 불일치');
+      return res.status(401).json({ success: false, message: '아이디 또는 비밀번호가 일치하지 않습니다.' });
     }
+  });
+});
 
-console.log(req)
-
-
-})
-})
-// app.listen(3001, () => {
-//     console.log('서버 실행 중')
-// })
-module.exports = app
+module.exports = router;

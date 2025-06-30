@@ -1,26 +1,28 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+// src/components/Login.jsx
+import React, { useState }     from 'react';
+import { Link, useNavigate }   from 'react-router-dom';
 import '../style/login.css';
 
 import googleIcon from '../assets/btn_google.svg';
 import kakaoIcon  from '../assets/btn_kakao.svg';
 import naverIcon  from '../assets/btn_naver.svg';
 
-import axios from 'axios'
+import axios from 'axios';
 
-const tryLogin = async (userId,password) => {
+// 실제 로그인 요청 함수
+const tryLogin = async (userId, password) => {
   try {
-    const res = await axios.post('http://localhost:3001/userLogin/login', {
-        USER_ID: userId,
-        PW: password,
+    const res = await axios.post(
+      'http://localhost:3001/userLogin/login',
+      { USER_ID: userId, PW: password },
+      {
+        withCredentials: true,
+        headers: { 'Content-Type': 'application/json' }
       }
     );
-    console.log(res);
-    
-    // 예: 로그인 성공 여부가 res.data.success에 있다고 가정
-    return res.data.success;
+    return res.data.success;  // { success: true/false } 리턴을 가정
   } catch (err) {
-    console.error('에러 발생:', err);
+    console.error('로그인 오류:', err.response?.data || err.message);
     return false;
   }
 };
@@ -38,40 +40,49 @@ const BackIcon = () => (
   </svg>
 );
 
-const Login = () => {
+export default function Login({ onLoginSuccess }) {
   const [email, setEmail] = useState('');
   const [pw,    setPw]    = useState('');
   const navigate = useNavigate();
 
-  const handleBack     = () => navigate(-1);
-  const handleLogin = async (e) => {
-  e.preventDefault();  // 폼 제출 기본 동작 막기
+  // 뒤로가기 버튼
+  const handleBack = () => navigate(-1);
 
-  const success = await tryLogin(email, pw);
-  if (success) {
-    navigate('/community');
-  } else {
-    alert('로그인 실패');
-  }
-};
-  const handleSNSLogin = provider => console.log(`${provider} 로그인`);
-  <br></br>
+  // 로그인 폼 제출 핸들러
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    const success = await tryLogin(email, pw);
+    if (success) {
+      onLoginSuccess(email);   // App.jsx로 userId 전달
+      navigate('/pokedex');    // 카드 페이지로 이동
+    } else {
+      alert('로그인 실패: 아이디/비밀번호를 확인하세요.');
+    }
+  };
+
+  // SNS 로그인 (샘플)
+  const handleSNSLogin = (provider) => {
+    console.log(`${provider} 로그인`);
+  };
+
   return (
     <div className="login-screen-container">
       <div className="back-icon" onClick={handleBack}>
         <BackIcon />
       </div>
-      <br />
-      <br />
+
+      <br></br>
+      <br></br>
+
       <div className="login-inner">
         <h2 className="login-title">로그인</h2>
         <p className="login-subtitle">
           본인의 이메일이랑 패스워드를 입력해주세요.
         </p>
+
         <br></br>
         <br></br>
         <br></br>
-        
 
         <form onSubmit={handleLogin} className="login-form">
           <div className="input-group">
@@ -135,6 +146,4 @@ const Login = () => {
       </div>
     </div>
   );
-};
-
-export default Login;
+}
