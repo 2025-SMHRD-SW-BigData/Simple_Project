@@ -1,14 +1,18 @@
-// routes/PokedexServer.js
-const express  = require('express');
-const multer   = require('multer');
-const axios    = require('axios');
-const FormData = require('form-data');
-const mysql    = require('mysql2/promise');
+// File: src/Server/router/PokedexServer.js
+
+const express = require('express');
+const multer  = require('multer');
+const mysql   = require('mysql2/promise');
+const path    = require('path');
+const fs      = require('fs');
+const axios   = require('axios');
 
 const router = express.Router();
+
+// ─── Multer 설정 (메모리 저장) ───────────────────────────────────────────────
 const upload = multer({ storage: multer.memoryStorage() });
 
-// MySQL 풀 설정
+// ─── MySQL 풀 생성 ───────────────────────────────────────────────────────────
 const pool = mysql.createPool({
   host               : 'project-db-campus.smhrd.com',
   port               : 3307,
@@ -21,105 +25,109 @@ const pool = mysql.createPool({
   charset            : 'utf8mb4'
 });
 
-// Flask AI 서버 URL
-const FLASK_URL = 'http://localhost:5000/predict';
-
-// POST /pokedex/predict — 이미지 업로드 → 카드 생성
-router.post('/predict', upload.single('image'), async (req, res) => {
-  console.log('▶▶▶ /pokedex/predict 진입');
-  const { user_id: userId } = req.body;
-  const file = req.file;
-
-  // 필수 파라미터 검사
+// ─── 1) 내 카드 목록 조회 ─────────────────────────────────────────────────────
+// GET /pokedex/cards?user_id=…
+router.get('/cards', async (req, res) => {
+  const userId = req.query.user_id;
   if (!userId) {
-    return res.status(400).json({ error: 'user_id를 보내주세요.' });
+    return res.status(400).json({ error: 'user_id required' });
   }
-  if (!file) {
-    return res.status(400).json({ error: 'image 파일이 필요합니다.' });
+  try {
+    const [rows] = await pool.execute(
+      'SELECT CARD_ID AS card_id, IMAGE_URL AS imageUrl, FISH_NAME AS name, RAREITY AS rarity FROM CARD WHERE USER_ID = ? ORDER BY CAPTURE_DATE DESC',
+      [userId]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error('카드 목록 로드 실패:', err);
+    res.status(500).json({ error: 'Failed to load cards.' });
+  }
+});
+
+// ─── 2) 카드 생성 (이미지 → Python/Flask 서버 → DB 삽입 → EXP/LEVEL 갱신) ───────────────
+// POST /pokedex/predict
+router.post('/predict', upload.single('image'), async (req, res) => {
+  const userId = req.body.user_id;
+  const file   = req.file;
+  if (!userId || !file) {
+    return res.status(400).json({ error: 'user_id and image are required' });
   }
 
   let conn;
   try {
+    // 1) Python/Flask 서버에 이미지 전송 → 카드 메타데이터 수신
+    const form = new FormData();
+    form.append('image', file.buffer, { filename: file.originalname });
+    const pyRes = await axios.post(
+      'http://localhost:5000/predict',
+      form,
+      {
+        headers: form.getHeaders(),
+        timeout: 120_000
+      }
+    );
+    const { imageUrl, name, rarity, hashtags, description } = pyRes.data;
+
+    // 2) DB 트랜잭션 시작
     conn = await pool.getConnection();
     await conn.beginTransaction();
 
-    // Member 확인
-    const [mrows] = await conn.execute(
-      'SELECT 1 FROM Member WHERE USER_ID = ?', [userId]
-    );
-    if (mrows.length === 0) {
-      return res.status(404).json({ error: '등록되지 않은 사용자입니다.' });
-    }
-
-    // AI 서버 호출 → { name, rarity, hashtags, description, imageUrl }
-    const form = new FormData();
-    form.append('image', file.buffer, file.originalname);
-    const flaskRes = await axios.post(FLASK_URL, form, {
-      headers: form.getHeaders(),
-      timeout: 120000
-    });
-    if (flaskRes.status !== 200) {
-      throw new Error(`AI 서버 오류: ${flaskRes.status}`);
-    }
-    const card = flaskRes.data;
-    console.log('← AI가 만든 카드:', card);
-
-    // CARD 저장 (FISHPOINT_ID 컬럼 없이)
-    const [insertCard] = await conn.execute(
-      `INSERT INTO CARD
-         (USER_ID, RAREITY, IMAGE_URL, FISH_NAME)
+    // 3) CARD 테이블에 삽입
+    const [insertResult] = await conn.execute(
+      `INSERT INTO CARD (USER_ID, RAREITY, IMAGE_URL, FISH_NAME)
        VALUES (?, ?, ?, ?)`,
-      [userId, parseInt(card.rarity,10), card.imageUrl, card.name]
+      [userId, rarity, imageUrl, name]
     );
-    const newCardId = insertCard.insertId;
+    const cardId = insertResult.insertId;
 
-    // HASHTAG 저장
-    if (Array.isArray(card.hashtags) && card.hashtags.length) {
-      for (const tag of card.hashtags) {
-        await conn.execute(
-          'INSERT INTO HASHTAG (CARD_ID, HASHTAG_CONTENTS) VALUES (?,?)',
-          [newCardId, tag]
-        );
-      }
+    // 4) MEMBER EXP/LEVEL 갱신
+    //    카드 1장당 EXP 50%, EXP >= 100 이면 LEVEL +1, EXP -= 100
+    const expGain = 50;
+    await conn.execute(
+      `UPDATE Member
+         SET EXP = EXP + ?
+       WHERE USER_ID = ?`,
+      [expGain, userId]
+    );
+    //    만약 EXP >= 100 이면 레벨업
+    const [[member]] = await conn.execute(
+      `SELECT EXP, \`LEVEL\` AS lvl
+         FROM Member
+        WHERE USER_ID = ?`,
+      [userId]
+    );
+    if (member.EXP >= 100) {
+      const newExp = member.EXP - 100;
+      await conn.execute(
+        `UPDATE Member
+           SET \`LEVEL\` = lvl + 1,
+               EXP      = ?
+         WHERE USER_ID = ?`,
+        [newExp, userId]
+      );
     }
 
+    // 5) 커밋
     await conn.commit();
-    return res.status(201).json({ card_id: newCardId, ...card });
 
+    // 6) 응답 (DB 삽입된 카드 ID 포함)
+    res.status(201).json({
+      card_id : cardId,
+      imageUrl,
+      name,
+      rarity,
+      hashtags,
+      description
+    });
   } catch (err) {
     if (conn) {
       await conn.rollback();
       conn.release();
     }
-    console.error('카드 생성 중 오류:', err);
-    return res.status(500).json({ error: '카드 생성 중 오류가 발생했습니다.' });
+    console.error('카드 생성 실패:', err);
+    res.status(500).json({ error: 'Failed to create card.' });
   } finally {
     if (conn && conn.release) conn.release();
-  }
-});
-
-// GET /pokedex/cards — 로그인한 유저의 저장된 카드 모두 조회
-router.get('/cards', async (req, res) => {
-  const userId = req.query.user_id;  // 예: ?user_id=USER001
-  if (!userId) {
-    return res.status(400).json({ error: 'user_id 쿼리 파라미터가 필요합니다.' });
-  }
-
-  try {
-    const [rows] = await pool.execute(
-      `SELECT CARD_ID   AS card_id,
-              IMAGE_URL  AS imageUrl,
-              FISH_NAME  AS name,
-              RAREITY    AS rarity
-       FROM CARD
-       WHERE USER_ID = ?
-       ORDER BY CARD_ID DESC`,
-      [userId]
-    );
-    return res.json(rows);
-  } catch (err) {
-    console.error('카드 조회 중 오류:', err);
-    return res.status(500).json({ error: '카드 조회 중 오류가 발생했습니다.' });
   }
 });
 

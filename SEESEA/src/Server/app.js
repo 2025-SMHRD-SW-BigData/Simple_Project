@@ -1,28 +1,32 @@
+// File: src/Server/app.js
+
 const express = require('express');
 const session = require('express-session');
 const cors    = require('cors');
 const path    = require('path');
 
+// ─── 라우터 import ─────────────────────────────────────────────────
 const loginRouter     = require('./router/LoginServer');
 const joinRouter      = require('./router/JoinServer');
 const fishPointRouter = require('./router/FishPointServer');
 const pokedexRouter   = require('./router/PokedexServer');
 const communityRouter = require('./router/CommunityServer');
+const rankingRouter   = require('./router/RankingServer'); // ← 추가
 
 const app = express();
 const PORT = 3001;
 
-// 1) CORS 설정
+// ─── 1. CORS 설정 ─────────────────────────────────────────────────
 app.use(cors({
   origin: ['http://localhost:3000', 'http://localhost:5173'],
   credentials: true
 }));
 
-// 2) Body parser
+// ─── 2. Body parser ─────────────────────────────────────────────────
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 3) Session 설정
+// ─── 3. Session 설정 ────────────────────────────────────────────────
 app.use(session({
   secret: 'your_secret_key',
   resave: false,
@@ -30,30 +34,31 @@ app.use(session({
   cookie: { secure: false, sameSite: 'lax' }
 }));
 
-// 4) 정적 파일 서빙
+// ─── 4. 정적 파일 서빙 ───────────────────────────────────────────────
 const PUBLIC_DIR = path.resolve(__dirname, '../public');
-app.use('/static', express.static(PUBLIC_DIR));
+app.use('/static',  express.static(PUBLIC_DIR));
 app.use('/uploads', express.static(path.join(PUBLIC_DIR, 'uploads')));
 
-// 5) 라우터 마운트
+// ─── 5. 라우터 마운트 ───────────────────────────────────────────────
 app.use('/userLogin', loginRouter);
 app.use('/userJoin',  joinRouter);
 app.use('/fishPoint', fishPointRouter);
 app.use('/pokedex',   pokedexRouter);
 app.use('/community', communityRouter);
+app.use('/ranking',   rankingRouter); // ← 여기에서 마운트
 
-// 6) 404 핸들러
+// ─── 6. 404 핸들러 ─────────────────────────────────────────────────
 app.use((req, res) => {
   res.status(404).json({ error: `Not Found: ${req.method} ${req.originalUrl}` });
 });
 
-// 7) 에러 핸들러
+// ─── 7. 에러 핸들러 ─────────────────────────────────────────────────
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Server Error' });
 });
 
-// 8) 서버 시작
+// ─── 8. 서버 시작 ───────────────────────────────────────────────────
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });

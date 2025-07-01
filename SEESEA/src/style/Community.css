@@ -1,3 +1,6 @@
+/* src/style/Community.css */
+
+/* 전체 피드 컨테이너 */
 .feed-container-final {
   flex-grow: 1;
   overflow-y: auto;
@@ -5,6 +8,7 @@
   background-color: #f0f2f5;
 }
 
+/* 각 게시물 카드 */
 .post-final {
   background-color: #fff;
   border-radius: 8px;
@@ -13,6 +17,7 @@
   overflow: hidden;
 }
 
+/* 작성자 / 팔로우 섹션 */
 .post-author-section {
   display: flex;
   justify-content: space-between;
@@ -36,6 +41,7 @@
   cursor: pointer;
   font-size: 12px;
   font-weight: bold;
+  font-family: inherit;
 }
 
 .follow-btn.following {
@@ -67,6 +73,7 @@
   scroll-snap-align: center;
 }
 
+/* 캡션 오버레이 */
 .post-caption-overlay-final {
   position: absolute;
   bottom: 0;
@@ -76,8 +83,21 @@
   color: white;
   padding: 15px;
   font-size: 14px;
+  font-family: inherit;
 }
 
+.more-link {
+  color: #aae0f9;
+  text-decoration: none;
+  margin-left: 5px;
+}
+
+.tags {
+  color: #aae0f9;
+  margin-left: 10px;
+}
+
+/* 좋아요 / 댓글 액션 */
 .post-actions-final {
   display: flex;
   padding: 10px 15px;
@@ -93,6 +113,7 @@
   display: flex;
   align-items: center;
   margin-right: 15px;
+  font-family: inherit;
 }
 
 .action-btn-final span {
@@ -100,34 +121,17 @@
   font-size: 14px;
 }
 
+/* 댓글 섹션 */
 .comments-section {
   padding: 10px 15px;
   background-color: #f9f9f9;
 }
 
-.comment-input-area {
-  display: flex;
-  margin-top: 10px;
-}
-
-.comment-input-area input {
-  flex-grow: 1;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  margin-right: 10px;
-}
-
-.comment-input-area button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
+/* 댓글 목록 아이템 */
 .comment-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 5px 0;
   border-bottom: 1px dashed #eee;
 }
@@ -139,9 +143,89 @@
 .comment-content {
   display: flex;
   align-items: center;
+  flex: 1;
 }
 
+/* 댓글 작성자 이름 */
 .comment-author {
   font-weight: bold;
   margin-right: 5px;
+  font-family: inherit;
+}
+
+/* 댓글 본문 텍스트 */
+.comment-text {
+  font-family: inherit;
+  font-size: 14px;
+  color: #333;
+}
+
+/* 댓글 수정용 입력창 */
+.comment-content input[type="text"] {
+  flex-grow: 1;
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+/* 댓글 수정/삭제 버튼 */
+.comment-actions {
+  display: flex;
+  margin-left: 10px;
+}
+
+.comment-actions button {
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  padding: 2px 4px;
+  font-family: inherit;
+  font-size: 14px;
+  margin-left: 8px;
+}
+
+.comment-actions button:hover {
+  text-decoration: underline;
+}
+
+/* 댓글 입력 영역 */
+.comment-input-area {
+  display: flex;
+  margin-top: 10px;
+}
+
+.comment-input-area input {
+  flex-grow: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-right: 10px;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.comment-input-area button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+/* 줄여진 캡션에서 '접기' 링크 */
+.collapse-caption-link {
+  color: #ccc;
+  margin-left: 5px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.collapse-caption-link:hover {
+  text-decoration: underline;
 }

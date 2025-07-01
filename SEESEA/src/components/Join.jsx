@@ -78,10 +78,10 @@ const Join = () => {
 
         <form onSubmit={handleSubmit} className="join-form">
           <div className="input-group">
-            <label>이름</label>
+            <label>닉네임</label>
             <input
               type="text"
-              placeholder="이름을 입력하세요"
+              placeholder="사용하실 닉네임을 입력하세요"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required

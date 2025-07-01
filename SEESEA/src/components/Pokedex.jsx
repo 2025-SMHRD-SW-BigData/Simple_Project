@@ -4,15 +4,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import '../style/Pokedex.css';
 import { BsPlusLg } from 'react-icons/bs';
-import { FaStar }  from 'react-icons/fa';
+import { FaStar }   from 'react-icons/fa';
 
-export default function Pokedex({ userId }) {
-  const [cards, setCards]           = useState([]);
-  const [uploading, setUploading]   = useState(false);
-  const [errorMsg, setErrorMsg]     = useState('');
-  const fileInputRef                = useRef(null);
+export default function Pokedex({ userId, refreshProfile }) {
+  const [cards, setCards]         = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [errorMsg, setErrorMsg]   = useState('');
+  const fileInputRef              = useRef(null);
 
-  // 1) 마운트 시 로그인된 유저의 기존 카드 로드
+  // 1) 마운트 시 기존 카드 로드
   useEffect(() => {
     if (!userId) {
       setErrorMsg('⚠️ 로그인 후 이용해 주세요.');
@@ -31,7 +31,7 @@ export default function Pokedex({ userId }) {
     });
   }, [userId]);
 
-  // 2) + 버튼 클릭하면 파일 다이얼로그 오픈
+  // + 버튼 클릭
   const handleAddClick = () => {
     if (!userId) {
       setErrorMsg('⚠️ 로그인 후 이용해 주세요.');
@@ -42,7 +42,7 @@ export default function Pokedex({ userId }) {
     fileInputRef.current.click();
   };
 
-  // 3) 파일 선택되면 업로드 → 즉시 갱신
+  // 파일 선택 → 업로드 → 즉시 갱신
   const handleFileChange = async e => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -65,16 +65,19 @@ export default function Pokedex({ userId }) {
       );
       const { card_id, imageUrl, name, rarity } = res.data;
 
-      // 새 카드 바로 맨 앞에 추가
+      // 새 카드 바로 앞에 추가
       setCards(prev => [
         { card_id, imageUrl, name, rarity },
         ...prev
       ]);
+
+      // ▲ 헤더 레벨·EXP 즉시 갱신
+      refreshProfile();
     } catch (err) {
       setErrorMsg(err.response?.data?.error || '카드 생성 중 오류');
     } finally {
       setUploading(false);
-      e.target.value = null;  
+      e.target.value = null;
     }
   };
 
