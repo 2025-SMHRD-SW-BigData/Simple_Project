@@ -40,7 +40,7 @@ const Join = () => {
 
   // 서버로 회원가입 정보 전송
   const tryJoin = () => {
-    axios.post('http://localhost:3001/join', {
+    axios.post('http://localhost:3001/userJoin/join', {
 
         USER_ID: userId,
         PW: password,
