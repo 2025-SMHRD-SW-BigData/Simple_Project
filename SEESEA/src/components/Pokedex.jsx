@@ -1,3 +1,5 @@
+// File: src/components/Pokedex.jsx
+
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { BsPlusLg } from 'react-icons/bs';
@@ -12,10 +14,10 @@ export default function Pokedex() {
   const [cards, setCards]         = useState([]);
   const [uploading, setUploading] = useState(false);
   const [errorMsg, setErrorMsg]   = useState('');
-  const [modalImage, setModalImage] = useState(null);  // ← 추가
+  const [modalImage, setModalImage] = useState(null);
   const fileInputRef              = useRef(null);
 
-  // 1) 마운트 시 기존 카드 로드
+  // 1) 마운트 시 카드 목록 로드
   useEffect(() => {
     if (!userId) {
       setErrorMsg('⚠️ 로그인 후 이용해 주세요.');
@@ -26,6 +28,7 @@ export default function Pokedex() {
       withCredentials: true
     })
     .then(res => {
+      console.log('Cards loaded:', res.data);  // 디버그용 콘솔
       setCards(res.data);
       setErrorMsg('');
     })
@@ -41,11 +44,10 @@ export default function Pokedex() {
       return;
     }
     if (uploading) return;
-    setErrorMsg('');
     fileInputRef.current.click();
   };
 
-  // 파일 선택 → 업로드 → 즉시 갱신
+  // 파일 선택 → 업로드 → 목록 갱신
   const handleFileChange = async e => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -66,15 +68,12 @@ export default function Pokedex() {
           withCredentials: true
         }
       );
-      const { card_id, imageUrl, name, rarity } = res.data;
 
-      // 새 카드 바로 앞에 추가
+      const { card_id, imageUrl, name, rarity, hashtags } = res.data;
       setCards(prev => [
-        { card_id, imageUrl, name, rarity },
+        { card_id, imageUrl, name, rarity, hashtags },
         ...prev
       ]);
-
-      // 헤더 프로필(레벨/경험치) 즉시 갱신
       refreshProfile();
     } catch (err) {
       setErrorMsg(err.response?.data?.error || '카드 생성 중 오류');
@@ -100,7 +99,7 @@ export default function Pokedex() {
           </button>
         </div>
 
-        {/* 숨겨진 파일 input */}
+        {/* 파일 입력 (숨김) */}
         <input
           type="file"
           accept="image/*"
@@ -109,27 +108,48 @@ export default function Pokedex() {
           onChange={handleFileChange}
         />
 
-        {/* 물고기 카드들 */}
+        {/* 물고기 카드 리스트 */}
         {cards.map(fish => (
           <div
             key={fish.card_id}
             className="fish-card"
-            onClick={() => setModalImage(fish.imageUrl)}  // ← 클릭 시 모달 열기
+            onClick={() => setModalImage(fish.imageUrl)}
           >
-            <img src={fish.imageUrl} alt={fish.name} className="fish-image" />
+            <img
+              src={fish.imageUrl}
+              alt={fish.name}
+              className="fish-image"
+            />
+
             <div className="fish-info">
+              {/* 어종 이름 */}
               <h3 className="fish-name">{fish.name}</h3>
+
+              {/* 희귀도 */}
               <div className="fish-rarity">
                 {Array.from({ length: fish.rarity }, (_, i) => (
                   <FaStar key={i} />
                 ))}
               </div>
+
+              {/* 해시태그 (희귀도 바로 아래) */}
+              <div className="fish-hashtags">
+                {fish.hashtags && fish.hashtags.length > 0
+                  ? fish.hashtags.map((tag, idx) => (
+                      <span key={idx} className="hashtag">
+                        {tag.startsWith('#') ? tag : `#${tag}`}
+                      </span>
+                    ))
+                  : <span className="hashtag">#태그없음</span>
+                }
+              </div>
+
             </div>
           </div>
         ))}
       </div>
 
-      {/* 이미지 모달 */}
+      {/* 이미지 확대 모달 */}
       {modalImage && (
         <div
           className="image-modal-overlay"

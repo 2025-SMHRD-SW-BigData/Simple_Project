@@ -1,6 +1,6 @@
-/* src/style/Pokedex.css */
+/* File: src/style/Pokedex.css */
 
-/* Paperlogy-8ExtraBold 폰트 선언 (생략 가능, 이미 Global 에 선언된 경우 중복 불필요) */
+/* Paperlogy-8ExtraBold 폰트 선언 (생략 가능) */
 @font-face {
   font-family: 'Paperlogy-8ExtraBold';
   src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-8ExtraBold.woff2') format('woff2');
@@ -13,14 +13,12 @@
   font-family: 'Paperlogy-8ExtraBold', sans-serif;
 }
 
-/* ★ 변경: 한 행에 3열 고정 그리드 레이아웃 ★ */
 .fish-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
 }
 
-/* 카드 박스 스타일 */
 .fish-card,
 .add-card-container {
   width: 100%;
@@ -53,7 +51,6 @@
   transform: scale(1.1);
 }
 
-/* + 카드 버튼 */
 .add-card-container {
   display: flex;
   justify-content: center;
@@ -75,9 +72,43 @@
   background-color: #f0f0f0;
 }
 
-/* 숨김 input 스타일 (변경 없음) */
+.delete-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 50%;
+  padding: 4px;
+  cursor: pointer;
+  z-index: 1;
+  transition: background 0.2s;
+}
 
-/* ===== 이미지 확대 모달 추가 ===== */
+.delete-button:hover {
+  background: rgba(255, 0, 0, 0.8);
+}
+
+/* 해시태그 스타일 */
+.fish-info {
+  padding: 8px;
+}
+
+.fish-hashtags {
+  margin-top: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.hashtag {
+  font-size: 0.75rem;
+  color: #0077cc;
+  background: #e0f4ff;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
 .image-modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -96,7 +127,17 @@
   animation: zoomIn 0.3s ease-in-out;
 }
 
-/* 확대 애니메이션 */
+.fish-card,
+.add-card-container {
+  /* height: 180px; */      /* 삭제 */
+  min-height: 180px;        /* 고정 높이를 최소 높이로 변경 */
+}
+
+.fish-card {
+  height: auto;             /* 내용에 맞춰 높이 자동 확장 */
+  overflow: visible;        /* 내부 해시태그가 잘리지 않도록 */
+}
+
 @keyframes zoomIn {
   from {
     transform: scale(0.8);

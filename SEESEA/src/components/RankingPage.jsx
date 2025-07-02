@@ -1,6 +1,6 @@
 // File: src/components/RankingPage.jsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import '../style/RankingPage.css';
 import { IoPersonCircleOutline } from 'react-icons/io5';
 import axios from 'axios';
@@ -70,6 +70,25 @@ export default function RankingPage() {
     });
   }, [userId]);
 
+  // 같은 레벨은 동일 순위, 건너뛴 순위를 적용한 데이터 생성
+  const dataWithRank = useMemo(() => {
+    // 레벨 내림차순 정렬
+    const sorted = [...rankingData].sort((a, b) => b.level - a.level);
+    const result = [];
+    let prevLevel = null;
+    let prevRank  = 0;
+
+    sorted.forEach((user, idx) => {
+      // 이전 레벨과 다르면 현재 인덱스+1을 순위로, 같으면 이전 순위 유지
+      const rank = user.level !== prevLevel ? idx + 1 : prevRank;
+      result.push({ ...user, rank });
+      prevLevel = user.level;
+      prevRank  = rank;
+    });
+
+    return result;
+  }, [rankingData]);
+
   // 내 아이콘: 레벨 1~5 범위로 클램핑
   const myIconIndex = Math.min(5, Math.max(1, myLevel)) - 1;
   const myIcon      = icons[myIconIndex];
@@ -80,7 +99,6 @@ export default function RankingPage() {
 
         {/* ─── 내 프로필 & 진행도 ─────────────────────────── */}
         <div className="my-ranking-info">
-          {/* ⭐️ 여기에 내 닉네임을 표시 */}
           <div className="my-nickname">{nickname}</div>
 
           <div className="level-display">
@@ -116,12 +134,12 @@ export default function RankingPage() {
             </tr>
           </thead>
           <tbody>
-            {rankingData.map((user, idx) => {
+            {dataWithRank.map((user) => {
               const lvl = Math.min(5, Math.max(1, user.level));
               return (
                 <tr key={user.id}>
                   <td>
-                    <span className="rank-number">{idx + 1}</span>
+                    <span className="rank-number">{user.rank}</span>
                     <img
                       src={icons[lvl - 1]}
                       alt={`Lv ${user.level}`}

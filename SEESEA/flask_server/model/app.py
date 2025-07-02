@@ -1,4 +1,4 @@
-# flask_server/app.py
+# File: flask_server/app.py
 
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
@@ -50,25 +50,44 @@ def detect_labels(image_bytes) -> list[str]:
         elif lbl == "---":
             mapped.append("고등어")
         else:
-            mapped.append(lbl)
-    if not mapped:
-        return ["UnknownFish"]
+            mapped.append(lbl or "UnknownFish")
+    # 중복 제거
     seen, out = set(), []
     for l in mapped:
         if l not in seen:
             seen.add(l)
             out.append(l)
-    return out
+    return out or ["UnknownFish"]
 
-# --- 메타데이터 생성 (Flan-T5) ---
+# --- 메타데이터 생성 (Flan-T5) with 해시태그 보강 ---
 text_gen = pipeline("text2text-generation", model="google/flan-t5-base", device=-1)
 def generate_card_metadata(labels):
-    prompt = f"Labels: {labels}\n\nReturn JSON with keys: name, hashtags (list), description."
+    prompt = (
+        f"Labels: {labels}\n\n"
+        "Return a JSON object with keys:\n"
+        "  name: string,\n"
+        "  hashtags: list of strings (each starting with '#'),\n"
+        "  description: string.\n"
+        "Do not include any other keys."
+    )
     out = text_gen(prompt, max_length=128, do_sample=False)[0]["generated_text"]
     try:
-        return json.loads(out)
+        data = json.loads(out)
     except:
-        return {"name": labels[0] if labels else "Unknown", "hashtags": [], "description": ""}
+        data = {}
+    # 기본값 설정
+    name        = data.get("name") or (labels[0] if labels else "Unknown")
+    hashtags    = data.get("hashtags") or []
+    description = data.get("description") or ""
+
+    # 비어 있으면 레이블로 태그 생성
+    if not hashtags:
+        hashtags = [f"#{lbl}" for lbl in labels]
+
+    # 모든 태그가 '#'로 시작하도록 보장
+    hashtags = [tag if tag.startswith('#') else f"#{tag}" for tag in hashtags]
+
+    return {"name": name, "hashtags": hashtags, "description": description}
 
 # --- Stable Diffusion 세팅 ---
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -103,9 +122,9 @@ def process_card(image_bytes, host_url):
     """
     labels      = detect_labels(image_bytes)
     meta        = generate_card_metadata(labels)
-    name        = meta.get("name", "Unknown")
-    hashtags    = meta.get("hashtags", [])
-    description = meta.get("description", "")
+    name        = meta["name"]
+    hashtags    = meta["hashtags"]
+    description = meta["description"]
     rarity      = random.randint(1, 5)
     image_path  = generate_card_image(name, rarity)
     image_url   = host_url.rstrip("/") + image_path
@@ -123,13 +142,11 @@ def predict():
     img = request.files.get('image')
     if not img:
         return jsonify({"error":"No image provided."}), 400
-
     image_bytes = img.stream.read()
     try:
         card = process_card(image_bytes, request.host_url)
     except Exception as e:
         return jsonify({"error": f"Card generation failed: {e}"}), 500
-
     return jsonify(card), 200
 
 # --- 2) 비동기 작업 등록 엔드포인트 ---
@@ -138,7 +155,6 @@ def predict_async():
     img = request.files.get('image')
     if not img:
         return jsonify({"error":"No image provided."}), 400
-
     job_id = uuid4().hex
     image_bytes = img.stream.read()
     future = executor.submit(process_card, image_bytes, request.host_url)

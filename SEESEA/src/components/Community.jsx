@@ -7,7 +7,6 @@ import { FaHeart, FaRegHeart, FaRegComment } from 'react-icons/fa';
 import '../style/Community.css';
 
 export default function Community() {
-  // MainLayout에서 내려주는 context
   const { userId, setFollowers, setFollowing } = useOutletContext();
 
   const [posts, setPosts]               = useState([]);
@@ -15,7 +14,6 @@ export default function Community() {
   const [commentInputs, setCommentInputs] = useState({});
   const [editingComment, setEditingComment] = useState({});
   const [errorMsg, setErrorMsg]         = useState('');
-  // ★ 캡션 확장/축소 토글 상태
   const [showFullCaption, setShowFullCaption] = useState({});
 
   // 1) 피드 + 상태 로드
@@ -25,7 +23,12 @@ export default function Community() {
       return;
     }
     axios
-      .get(`http://localhost:3001/community/posts?user_id=${encodeURIComponent(userId)}`, { withCredentials: true })
+      .get(
+        `http://localhost:3001/community/posts?user_id=${encodeURIComponent(
+          userId
+        )}`,
+        { withCredentials: true }
+      )
       .then(res => setPosts(res.data))
       .catch(() => setErrorMsg('피드 로드에 실패했습니다.'));
   }, [userId]);
@@ -72,7 +75,11 @@ export default function Community() {
     const text = (commentInputs[feedId] || '').trim();
     if (!text) return;
     axios
-      .post(`http://localhost:3001/community/${feedId}/comment`, { user_id: userId, text }, { withCredentials: true })
+      .post(
+        `http://localhost:3001/community/${feedId}/comment`,
+        { user_id: userId, text },
+        { withCredentials: true }
+      )
       .then(res => {
         setPosts(ps =>
           ps.map(p =>
@@ -110,7 +117,9 @@ export default function Community() {
         setPosts(ps =>
           ps.map(p => {
             if (p.feedId === feedId) {
-              p.comments = p.comments.map(c => (c.commentId === commentId ? res.data : c));
+              p.comments = p.comments.map(c =>
+                c.commentId === commentId ? res.data : c
+              );
             }
             return p;
           })
@@ -123,10 +132,10 @@ export default function Community() {
   // 댓글 삭제
   const deleteComment = (feedId, commentId) => {
     axios
-      .delete(
-        `http://localhost:3001/community/${feedId}/comment/${commentId}`,
-        { data: { user_id: userId }, withCredentials: true }
-      )
+      .delete(`http://localhost:3001/community/${feedId}/comment/${commentId}`, {
+        data: { user_id: userId },
+        withCredentials: true
+      })
       .then(() => {
         setPosts(ps =>
           ps.map(p => {
@@ -146,13 +155,14 @@ export default function Community() {
   return (
     <>
       {posts.map((p, idx) => {
-        // ★ 캡션 접기/펼치기 로직
-        const THRESHOLD = 80; // 글자 수 기준
+        // ★ 캡션 확장/축소 토글 상태
+        const THRESHOLD = 80;
         const isLong = p.caption.length > THRESHOLD;
         const expanded = showFullCaption[p.feedId] || false;
-        const displayText = isLong && !expanded
-          ? p.caption.slice(0, THRESHOLD) + '...'
-          : p.caption;
+        const displayText =
+          isLong && !expanded
+            ? p.caption.slice(0, THRESHOLD) + '...'
+            : p.caption;
 
         return (
           <article key={p.feedId} className="post-final">
@@ -161,8 +171,12 @@ export default function Community() {
               <p className="author-nickname">{p.author}</p>
               {!p.isMine && (
                 <button
-                  className={p.following ? 'follow-btn following' : 'follow-btn'}
-                  onClick={() => handleFollowToggle(p.authorId, p.following, idx)}
+                  className={
+                    p.following ? 'follow-btn following' : 'follow-btn'
+                  }
+                  onClick={() =>
+                    handleFollowToggle(p.authorId, p.following, idx)
+                  }
                 >
                   {p.following ? '팔로잉' : '팔로우'}
                 </button>
@@ -171,14 +185,18 @@ export default function Community() {
 
             {/* 이미지 캐러셀 */}
             <div className="post-image-container">
-              {p.images.map((url, i) => (
-                <img
-                  key={i}
-                  src={`http://localhost:3001${url}`}
-                  alt="post"
-                  className="post-image-final"
-                />
-              ))}
+              {p.images.length > 0 ? (
+                p.images.map((url, i) => (
+                  <img
+                    key={i}
+                    src={`http://localhost:3001${url}`}
+                    alt="post"
+                    className="post-image-final"
+                  />
+                ))
+              ) : (
+                <div className="no-image-placeholder" />
+              )}
               <div className="post-caption-overlay-final">
                 <p>
                   {displayText}
@@ -202,10 +220,16 @@ export default function Community() {
             {/* 좋아요 / 댓글 */}
             <div className="post-actions-final">
               <button
-                onClick={() => handleLikeToggle(p.feedId, p.liked, idx)}
+                onClick={() =>
+                  handleLikeToggle(p.feedId, p.liked, idx)
+                }
                 className="action-btn-final"
               >
-                {p.liked ? <FaHeart style={{ color: 'red' }} /> : <FaRegHeart />}
+                {p.liked ? (
+                  <FaHeart style={{ color: 'red' }} />
+                ) : (
+                  <FaRegHeart />
+                )}
                 <span>{p.likeCount}</span>
               </button>
               <button
@@ -222,11 +246,15 @@ export default function Community() {
                 {p.comments.map(c => (
                   <div key={c.commentId} className="comment-item">
                     <div className="comment-content">
-                      <span className="comment-author">{c.author}:</span>
+                      <span className="comment-author">
+                        {c.author}:
+                      </span>
                       {editingComment[c.commentId] ? (
                         <input
                           type="text"
-                          value={commentInputs[c.commentId] ?? c.text}
+                          value={
+                            commentInputs[c.commentId] ?? c.text
+                          }
                           onChange={e =>
                             setCommentInputs(ci => ({
                               ...ci,
@@ -235,21 +263,41 @@ export default function Community() {
                           }
                         />
                       ) : (
-                        <span className="comment-text">{c.text}</span>
+                        <span className="comment-text">
+                          {c.text}
+                        </span>
                       )}
                     </div>
                     {c.authorId === userId && (
                       <div className="comment-actions">
                         {editingComment[c.commentId] ? (
-                          <button onClick={() => submitEdit(p.feedId, c.commentId)}>
+                          <button
+                            onClick={() =>
+                              submitEdit(
+                                p.feedId,
+                                c.commentId
+                              )
+                            }
+                          >
                             등록
                           </button>
                         ) : (
-                          <button onClick={() => startEditing(c.commentId)}>
+                          <button
+                            onClick={() =>
+                              startEditing(c.commentId)
+                            }
+                          >
                             수정
                           </button>
                         )}
-                        <button onClick={() => deleteComment(p.feedId, c.commentId)}>
+                        <button
+                          onClick={() =>
+                            deleteComment(
+                              p.feedId,
+                              c.commentId
+                            )
+                          }
+                        >
                           삭제
                         </button>
                       </div>
@@ -257,7 +305,6 @@ export default function Community() {
                   </div>
                 ))}
 
-                {/* 새 댓글 입력 */}
                 <div className="comment-input-area">
                   <input
                     type="text"
@@ -270,7 +317,13 @@ export default function Community() {
                       }))
                     }
                   />
-                  <button onClick={() => submitComment(p.feedId)}>등록</button>
+                  <button
+                    onClick={() =>
+                      submitComment(p.feedId)
+                    }
+                  >
+                    등록
+                  </button>
                 </div>
               </div>
             )}
