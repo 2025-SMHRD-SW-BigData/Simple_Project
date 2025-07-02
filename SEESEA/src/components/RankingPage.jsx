@@ -77,8 +77,12 @@ export default function RankingPage() {
   return (
     <div className="ranking-page">
       <div className="ranking-content">
-        {/* 내 프로필 & 진행도 */}
+
+        {/* ─── 내 프로필 & 진행도 ─────────────────────────── */}
         <div className="my-ranking-info">
+          {/* ⭐️ 여기에 내 닉네임을 표시 */}
+          <div className="my-nickname">{nickname}</div>
+
           <div className="level-display">
             <img src={myIcon} alt={`Lv ${myLevel}`} className="fish-icon" />
             <span className="level-text">Lv {myLevel}</span>
@@ -90,6 +94,7 @@ export default function RankingPage() {
             </div>
             <span className="progress-percent">{myExp} %</span>
           </div>
+
           <div className="level-progression">
             {icons.map((ic, idx) => (
               <React.Fragment key={idx}>
@@ -100,7 +105,7 @@ export default function RankingPage() {
           </div>
         </div>
 
-        {/* 전체 랭킹 테이블 */}
+        {/* ─── 전체 랭킹 테이블 ─────────────────────────────── */}
         <table className="ranking-table">
           <thead>
             <tr>
@@ -112,7 +117,6 @@ export default function RankingPage() {
           </thead>
           <tbody>
             {rankingData.map((user, idx) => {
-              // 서버에서 내려준 level 컬럼 그대로 사용
               const lvl = Math.min(5, Math.max(1, user.level));
               return (
                 <tr key={user.id}>
@@ -134,6 +138,7 @@ export default function RankingPage() {
             })}
           </tbody>
         </table>
+
       </div>
     </div>
   );

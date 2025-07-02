@@ -1,15 +1,18 @@
-// File: src/components/Pokedex.jsx
-
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import '../style/Pokedex.css';
 import { BsPlusLg } from 'react-icons/bs';
 import { FaStar }   from 'react-icons/fa';
+import { useOutletContext } from 'react-router-dom';
+import '../style/Pokedex.css';
 
-export default function Pokedex({ userId, refreshProfile }) {
+export default function Pokedex() {
+  // Outlet에서 userId와 refreshProfile 받기
+  const { userId, refreshProfile } = useOutletContext();
+
   const [cards, setCards]         = useState([]);
   const [uploading, setUploading] = useState(false);
   const [errorMsg, setErrorMsg]   = useState('');
+  const [modalImage, setModalImage] = useState(null);  // ← 추가
   const fileInputRef              = useRef(null);
 
   // 1) 마운트 시 기존 카드 로드
@@ -71,7 +74,7 @@ export default function Pokedex({ userId, refreshProfile }) {
         ...prev
       ]);
 
-      // ▲ 헤더 레벨·EXP 즉시 갱신
+      // 헤더 프로필(레벨/경험치) 즉시 갱신
       refreshProfile();
     } catch (err) {
       setErrorMsg(err.response?.data?.error || '카드 생성 중 오류');
@@ -108,7 +111,11 @@ export default function Pokedex({ userId, refreshProfile }) {
 
         {/* 물고기 카드들 */}
         {cards.map(fish => (
-          <div key={fish.card_id} className="fish-card">
+          <div
+            key={fish.card_id}
+            className="fish-card"
+            onClick={() => setModalImage(fish.imageUrl)}  // ← 클릭 시 모달 열기
+          >
             <img src={fish.imageUrl} alt={fish.name} className="fish-image" />
             <div className="fish-info">
               <h3 className="fish-name">{fish.name}</h3>
@@ -121,6 +128,21 @@ export default function Pokedex({ userId, refreshProfile }) {
           </div>
         ))}
       </div>
+
+      {/* 이미지 모달 */}
+      {modalImage && (
+        <div
+          className="image-modal-overlay"
+          onClick={() => setModalImage(null)}
+        >
+          <img
+            src={modalImage}
+            alt="Enlarged"
+            className="enlarged-image"
+            onClick={e => e.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }

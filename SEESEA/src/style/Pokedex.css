@@ -1,6 +1,6 @@
-/* src/style/Community.css */
+/* src/style/Pokedex.css */
 
-/* 0. Paperlogy-8ExtraBold 폰트 선언 (최상단에만 추가) */
+/* Paperlogy-8ExtraBold 폰트 선언 (생략 가능, 이미 Global 에 선언된 경우 중복 불필요) */
 @font-face {
   font-family: 'Paperlogy-8ExtraBold';
   src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-8ExtraBold.woff2') format('woff2');
@@ -8,253 +8,22 @@
   font-style: normal;
 }
 
-/* 1. 전역 세팅 */
-html, body, #root {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  background-color: #f0f2f5;
-}
-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  /* 전역 폰트를 Paperlogy-8ExtraBold로 지정 */
+.pokedex-container {
+  padding: 10px;
   font-family: 'Paperlogy-8ExtraBold', sans-serif;
 }
 
-/* 2. 앱 컨테이너 (390×844 ⇒ 450×950으로 조정된 상태 유지) */
-.screen-container.community-page {
-  width: 450px;
-  height: 950px;
-  margin: 20px auto;
-  background-color: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-
-  /* 여기서 overflow-y:auto 만 추가 */
-  overflow-y: auto;
-
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  padding: 0;
-}
-
-/* 3. 상단 헤더 */
-.community-header-final {
-  background-color: #34B3EB;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  box-sizing: border-box;
-  padding: 10px 0;
-  margin: 0;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-}
-.header-left-section {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 0 15px;
-}
-.header-title-final {
-  font-family: 'Paperlogy-8ExtraBold', sans-serif;
-  font-size: 22px;
-  margin: 0;
-  color: #ffffff;
-}
-.profile-main-final {
-  display: flex;
-  align-items: center;
-}
-.profile-pic-final {
-  font-size: 50px;
-  color: #aae0f9;
-  margin-right: 12px;
-}
-.profile-details-final {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-.nickname-btn-final {
-  background-color: #007BFF;
-  color: white;
-  border: none;
-  padding: 5px 12px;
-  border-radius: 15px;
-  font-family: 'Paperlogy-8ExtraBold', sans-serif;
-  font-size: 13px;
-  font-weight: bold;
-  margin-bottom: 6px;
-  cursor: pointer;
-}
-.profile-stats-final {
-  display: flex;
-  gap: 12px;
-  font-family: 'Paperlogy-8ExtraBold', sans-serif;
-  font-size: 12px;
-}
-.menu-btn-final {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 28px;
-  cursor: pointer;
-  padding: 0 15px;
-}
-
-/* 4. 피드 영역 */
-.feed-container-final {
-  flex: 1;
-  overflow-y: auto;
-  margin: 0;
-  padding: 10px 0 80px;
-  background-color: #f0f2f5;
-}
-
-/* 5. 게시물 스타일 */
-.post-final {
-  width: 100%;
-  margin: 10px 0;
-  box-sizing: border-box;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-}
-.post-author-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 12px;
-}
-.author-nickname {
-  font-family: 'Paperlogy-8ExtraBold', sans-serif;
-  font-weight: bold;
-  font-size: 14px;
-}
-.follow-btn {
-  background-color: #e0e0e0;
-  color: #333;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-family: 'Paperlogy-8ExtraBold', sans-serif;
-  font-size: 12px;
-  font-weight: bold;
-  cursor: pointer;
-}
-.post-image-container {
-  position: relative;
-}
-.post-image-final {
-  width: 100%;
-  display: block;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-}
-.post-caption-overlay-final {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: linear-gradient(to top, rgba(255,137,137,0.9), rgba(255,137,137,0));
-  color: white;
-  padding: 30px 12px 12px;
-  font-family: 'Paperlogy-8ExtraBold', sans-serif;
-  font-size: 13px;
-  line-height: 1.4;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-}
-.post-caption-overlay-final .more-link {
-  color: #fff;
-  text-decoration: underline;
-}
-.post-caption-overlay-final .tags {
-  font-weight: bold;
-}
-.post-actions-final {
-  display: flex;
-  padding: 10px 12px;
-  gap: 15px;
-  border-top: 1px solid #efefef;
-}
-.action-btn-final {
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-family: 'Paperlogy-8ExtraBold', sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  color: #333;
-}
-.action-btn-final svg {
-  font-size: 20px;
-}
-
-/* 6. 하단 내비게이션 */
-.bottom-nav-final {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 70px;
-  background-color: #ffffff;
-  border-top: 1px solid #dbdbdb;
-  display: flex;
-}
-.bottom-nav-final button {
-  flex: 1;
-  height: 100%;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #333;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  font-family: 'Paperlogy-8ExtraBold', sans-serif;
-  font-size: 32px;
-}
-.nav-label {
-  font-size: 12px;
-}
-
-/* 7. 로딩 오버레이 */
-.loading-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Paperlogy-8ExtraBold', sans-serif;
-  font-size: 18px;
-  color: #fff;
-  z-index: 50;
-}
-
-/* 8. 도감 페이지 카드 그리드 및 카드 박스 스타일 */
+/* ★ 변경: 한 행에 3열 고정 그리드 레이아웃 ★ */
 .fish-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
 }
 
+/* 카드 박스 스타일 */
 .fish-card,
 .add-card-container {
-  width: 140px;
+  width: 100%;
   height: 180px;
   position: relative;
   background-color: white;
@@ -284,6 +53,7 @@ body {
   transform: scale(1.1);
 }
 
+/* + 카드 버튼 */
 .add-card-container {
   display: flex;
   justify-content: center;
@@ -305,52 +75,35 @@ body {
   background-color: #f0f0f0;
 }
 
-.add-card-container .add-image-card svg {
-  font-size: 32px;
-  color: #a0a0a0;
-}
+/* 숨김 input 스타일 (변경 없음) */
 
-/* + 아이콘 자체의 스타일 */
-.add-image-card svg {
-  font-size: 40px; /* 아이콘 크기 */
-  color: #a0a0a0;  /* 아이콘 색상 */
-}
-
-/* 모달 오버레이 */
+/* ===== 이미지 확대 모달 추가 ===== */
 .image-modal-overlay {
-  position: fixed; /* 화면 스크롤과 상관없이 고정 */
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.8); /* 80% 투명도의 검은색 */
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2000; /* 다른 모든 요소들보다 위에 있도록 설정 */
-  cursor: pointer; /* 닫을 수 있다는 것을 암시 */
+  z-index: 2000;
 }
 
-/* 확대된 이미지 스타일 */
 .enlarged-image {
-  max-width: 90%; /* 화면 너비의 90%를 넘지 않도록 */
-  max-height: 90%; /* 화면 높이의 90%를 넘지 않도록 */
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5); /* 입체감을 위한 그림자 */
-  border-radius: 8px; /* 부드러운 모서리 */
-  cursor: default; /* 이미지 위에서는 기본 마우스 커서 */
-
-  /* 나타날 때 부드럽게 커지는 애니메이션 */
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 8px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
   animation: zoomIn 0.3s ease-in-out;
 }
 
-/* 확대 애니메이션 키프레임 정의 */
+/* 확대 애니메이션 */
 @keyframes zoomIn {
   from {
-    transform: scale(0.8); /* 시작 시 80% 크기 */
-    opacity: 0;            /* 시작 시 투명 */
+    transform: scale(0.8);
+    opacity: 0;
   }
   to {
-    transform: scale(1);   /* 끝날 때 100% 크기 */
-    opacity: 1;            /* 끝날 때 불투명 */
+    transform: scale(1);
+    opacity: 1;
   }
 }

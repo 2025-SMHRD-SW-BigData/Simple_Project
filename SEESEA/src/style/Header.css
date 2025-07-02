@@ -99,14 +99,15 @@
     border: 1px solid #ddd;
     border-radius: 5px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  z-index: 100; /* 헤더 위에 보이도록 */
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    z-index: 100; /* 헤더 위에 보이도록 */
   
-  /* ✨ 1. 여기에 애니메이션 속성을 추가합니다. */
-  animation: slideDownFadeIn 0.3s ease-out forwards;
+    /* ✨ 1. 여기에 애니메이션 속성을 추가합니다. */
+    animation: slideDownFadeIn 0.3s ease-out forwards;
+    font-family: 'Paperlogy-8ExtraBold', sans-serif;
 }
 
 .menu-popup button {
@@ -118,6 +119,7 @@
     cursor: pointer;
     font-size: 16px;
     color: #333;
+    font-family: 'Paperlogy-8ExtraBold', sans-serif;
 }
 
 .menu-popup button:hover {

@@ -91,7 +91,7 @@ def generate_card_image(name: str, rarity: int) -> str:
     Stable Diffusion 으로 카드 일러스트 생성 후 저장
     """
     prompt = f"A collectible card illustration of a fish named '{name}', rarity {rarity} stars."
-    image = sd_pipe(prompt, guidance_scale=7, num_inference_steps=15).images[0]
+    image = sd_pipe(prompt, guidance_scale=7, num_inference_steps=10).images[0]
     fn = f"{uuid4()}.png"
     path = os.path.join(CARDS_DIR, fn)
     image.save(path)
