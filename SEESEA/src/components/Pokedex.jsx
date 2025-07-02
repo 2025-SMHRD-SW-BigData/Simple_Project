@@ -1,18 +1,21 @@
-// File: src/components/Pokedex.jsx
-
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import '../style/Pokedex.css';
 import { BsPlusLg } from 'react-icons/bs';
-import { FaStar }  from 'react-icons/fa';
+import { FaStar }   from 'react-icons/fa';
+import { useOutletContext } from 'react-router-dom';
+import '../style/Pokedex.css';
 
-export default function Pokedex({ userId }) {
-  const [cards, setCards]           = useState([]);
-  const [uploading, setUploading]   = useState(false);
-  const [errorMsg, setErrorMsg]     = useState('');
-  const fileInputRef                = useRef(null);
+export default function Pokedex() {
+  // Outlet에서 userId와 refreshProfile 받기
+  const { userId, refreshProfile } = useOutletContext();
 
-  // 1) 마운트 시 로그인된 유저의 기존 카드 로드
+  const [cards, setCards]         = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [errorMsg, setErrorMsg]   = useState('');
+  const [modalImage, setModalImage] = useState(null);  // ← 추가
+  const fileInputRef              = useRef(null);
+
+  // 1) 마운트 시 기존 카드 로드
   useEffect(() => {
     if (!userId) {
       setErrorMsg('⚠️ 로그인 후 이용해 주세요.');
@@ -31,7 +34,7 @@ export default function Pokedex({ userId }) {
     });
   }, [userId]);
 
-  // 2) + 버튼 클릭하면 파일 다이얼로그 오픈
+  // + 버튼 클릭
   const handleAddClick = () => {
     if (!userId) {
       setErrorMsg('⚠️ 로그인 후 이용해 주세요.');
@@ -42,7 +45,7 @@ export default function Pokedex({ userId }) {
     fileInputRef.current.click();
   };
 
-  // 3) 파일 선택되면 업로드 → 즉시 갱신
+  // 파일 선택 → 업로드 → 즉시 갱신
   const handleFileChange = async e => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -65,16 +68,19 @@ export default function Pokedex({ userId }) {
       );
       const { card_id, imageUrl, name, rarity } = res.data;
 
-      // 새 카드 바로 맨 앞에 추가
+      // 새 카드 바로 앞에 추가
       setCards(prev => [
         { card_id, imageUrl, name, rarity },
         ...prev
       ]);
+
+      // 헤더 프로필(레벨/경험치) 즉시 갱신
+      refreshProfile();
     } catch (err) {
       setErrorMsg(err.response?.data?.error || '카드 생성 중 오류');
     } finally {
       setUploading(false);
-      e.target.value = null;  
+      e.target.value = null;
     }
   };
 
@@ -105,7 +111,11 @@ export default function Pokedex({ userId }) {
 
         {/* 물고기 카드들 */}
         {cards.map(fish => (
-          <div key={fish.card_id} className="fish-card">
+          <div
+            key={fish.card_id}
+            className="fish-card"
+            onClick={() => setModalImage(fish.imageUrl)}  // ← 클릭 시 모달 열기
+          >
             <img src={fish.imageUrl} alt={fish.name} className="fish-image" />
             <div className="fish-info">
               <h3 className="fish-name">{fish.name}</h3>
@@ -118,6 +128,21 @@ export default function Pokedex({ userId }) {
           </div>
         ))}
       </div>
+
+      {/* 이미지 모달 */}
+      {modalImage && (
+        <div
+          className="image-modal-overlay"
+          onClick={() => setModalImage(null)}
+        >
+          <img
+            src={modalImage}
+            alt="Enlarged"
+            className="enlarged-image"
+            onClick={e => e.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }

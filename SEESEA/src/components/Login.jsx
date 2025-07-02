@@ -1,6 +1,7 @@
-// src/components/Login.jsx
-import React, { useState }     from 'react';
-import { Link, useNavigate }   from 'react-router-dom';
+// File: src/components/Login.jsx
+
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import '../style/login.css';
 
 import googleIcon from '../assets/btn_google.svg';
@@ -44,6 +45,17 @@ export default function Login({ onLoginSuccess }) {
   const [email, setEmail] = useState('');
   const [pw,    setPw]    = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // 1) OAuth 콜백 처리: URL에 ?user_id=… 가 있으면 자동 로그인
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const u = params.get('user_id');
+    if (u) {
+      onLoginSuccess(u);
+      navigate('/community', { replace: true });
+    }
+  }, [location.search, onLoginSuccess, navigate]);
 
   // 뒤로가기 버튼
   const handleBack = () => navigate(-1);
@@ -54,15 +66,16 @@ export default function Login({ onLoginSuccess }) {
     const success = await tryLogin(email, pw);
     if (success) {
       onLoginSuccess(email);   // App.jsx로 userId 전달
-      navigate('/pokedex');    // 카드 페이지로 이동
+      navigate('/community', { replace: true });
     } else {
       alert('로그인 실패: 아이디/비밀번호를 확인하세요.');
     }
   };
 
-  // SNS 로그인 (샘플)
+  // SNS 로그인 핸들러
   const handleSNSLogin = (provider) => {
-    console.log(`${provider} 로그인`);
+    // 절대경로에 포트 3001을 반드시 포함!
+    window.location.href = `http://localhost:3001/auth/${provider}`;
   };
 
   return (
@@ -71,18 +84,15 @@ export default function Login({ onLoginSuccess }) {
         <BackIcon />
       </div>
 
-      <br></br>
-      <br></br>
+      <br /><br />
 
       <div className="login-inner">
         <h2 className="login-title">로그인</h2>
         <p className="login-subtitle">
-          본인의 이메일이랑 패스워드를 입력해주세요.
+          본인의 이메일과 패스워드를 입력해주세요.
         </p>
 
-        <br></br>
-        <br></br>
-        <br></br>
+        <br /><br /><br />
 
         <form onSubmit={handleLogin} className="login-form">
           <div className="input-group">
@@ -108,7 +118,7 @@ export default function Login({ onLoginSuccess }) {
           </div>
 
           <div className="forgot-pw">비밀번호를 잊어버렸나요?</div>
-          <br></br>
+          <br />
 
           <div className="social-login-icons">
             <button
@@ -133,7 +143,7 @@ export default function Login({ onLoginSuccess }) {
               <img src={naverIcon} alt="네이버 로그인" />
             </button>
           </div>
-          <br></br>
+          <br />
 
           <button type="submit" className="login-btn">
             로그인

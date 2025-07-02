@@ -1,49 +1,111 @@
-import React from 'react';
-import '../style/RankingPage.css';
-import { IoPersonCircleOutline } from 'react-icons/io5'; // 프로필 아이콘 import
+// File: src/components/RankingPage.jsx
 
-// 물고기 등급 이미지 import
+import React, { useState, useEffect } from 'react';
+import '../style/RankingPage.css';
+import { IoPersonCircleOutline } from 'react-icons/io5';
+import axios from 'axios';
+import { useOutletContext } from 'react-router-dom';
+
+// 등급별 물고기 아이콘
 import fishLevel1 from '../assets/fish_level1.png';
 import fishLevel2 from '../assets/fish_level2.png';
 import fishLevel3 from '../assets/fish_level3.png';
 import fishLevel4 from '../assets/fish_level4.png';
 import fishLevel5 from '../assets/fish_level5.png';
 
-const RankingPage = () => {
-  // 임시 랭킹 데이터
-  const rankingData = [
-    { id: 1, nickname: '사용자1', level: 25, fishImg: fishLevel5 },
-    { id: 2, nickname: '사용자2', level: 23, fishImg: fishLevel4 },
-    { id: 3, nickname: '사용자3', level: 20, fishImg: fishLevel4 },
-    { id: 4, nickname: '사용자4', level: 18, fishImg: fishLevel3 },
-    { id: 5, nickname: '사용자5', level: 15, fishImg: fishLevel1 },
+export default function RankingPage() {
+  // MainLayout에서 내려주는 userId, nickname
+  const { userId, nickname } = useOutletContext();
+
+  // 내 카드 개수, 레벨, 경험치
+  const [cardCount, setCardCount] = useState(0);
+  const [myLevel, setMyLevel]     = useState(1);
+  const [myExp, setMyExp]         = useState(0);
+
+  // 전체 회원 랭킹 데이터
+  const [rankingData, setRankingData] = useState([]);
+
+  // 등급 아이콘 배열 (1~5레벨)
+  const icons = [
+    fishLevel1,
+    fishLevel2,
+    fishLevel3,
+    fishLevel4,
+    fishLevel5
   ];
+
+  useEffect(() => {
+    if (!userId) return;
+
+    // 1) 내 카드 개수 불러와서 레벨/경험치 계산
+    axios.get('http://localhost:3001/pokedex/cards', {
+      params: { user_id: userId },
+      withCredentials: true
+    })
+    .then(res => {
+      const count = Array.isArray(res.data) ? res.data.length : 0;
+      setCardCount(count);
+
+      // 카드 2장마다 레벨 1업
+      const lvl = Math.floor(count / 2) + 1;
+      setMyLevel(lvl);
+
+      // 카드 1장당 경험치 50%
+      const expPct = (count % 2) * 50;
+      setMyExp(expPct);
+    })
+    .catch(err => {
+      console.error('내 카드 로드 실패:', err);
+    });
+
+    // 2) 전체 회원 랭킹 불러오기
+    axios.get('http://localhost:3001/ranking/users', {
+      withCredentials: true
+    })
+    .then(res => {
+      setRankingData(res.data);
+    })
+    .catch(err => {
+      console.error('랭킹 로드 실패:', err);
+    });
+  }, [userId]);
+
+  // 내 아이콘: 레벨 1~5 범위로 클램핑
+  const myIconIndex = Math.min(5, Math.max(1, myLevel)) - 1;
+  const myIcon      = icons[myIconIndex];
 
   return (
     <div className="ranking-page">
       <div className="ranking-content">
+
+        {/* ─── 내 프로필 & 진행도 ─────────────────────────── */}
         <div className="my-ranking-info">
+          {/* ⭐️ 여기에 내 닉네임을 표시 */}
+          <div className="my-nickname">{nickname}</div>
+
           <div className="level-display">
-            <img src={fishLevel2} alt="Fish Icon" className="fish-icon" /> {/* 물고기 아이콘 경로 수정 */}
-            <span className="level-text">Lv 2</span>
+            <img src={myIcon} alt={`Lv ${myLevel}`} className="fish-icon" />
+            <span className="level-text">Lv {myLevel}</span>
             <div className="progress-bar-container">
-              <div className="progress-bar" style={{ width: '70%' }}></div> {/* 임시 진행률 */}
+              <div
+                className="progress-bar"
+                style={{ width: `${myExp}%` }}
+              />
             </div>
-            <span className="progress-percent">71.2 %</span>
+            <span className="progress-percent">{myExp} %</span>
           </div>
+
           <div className="level-progression">
-            <img src={fishLevel1} alt="Fish Icon 1" />
-            <span>→</span>
-            <img src={fishLevel2} alt="Fish Icon 2" />
-            <span>→</span>
-            <img src={fishLevel3} alt="Fish Icon 3" />
-            <span>→</span>
-            <img src={fishLevel4} alt="Fish Icon 4" />
-            <span>→</span>
-            <img src={fishLevel5} alt="Fish Icon 5" />
+            {icons.map((ic, idx) => (
+              <React.Fragment key={idx}>
+                <img src={ic} alt={`Lv ${idx+1}`} />
+                {idx < icons.length - 1 && <span>→</span>}
+              </React.Fragment>
+            ))}
           </div>
         </div>
 
+        {/* ─── 전체 랭킹 테이블 ─────────────────────────────── */}
         <table className="ranking-table">
           <thead>
             <tr>
@@ -54,23 +116,30 @@ const RankingPage = () => {
             </tr>
           </thead>
           <tbody>
-            {rankingData.map((user, index) => (
-              <tr key={user.id}>
-                <td>
-                  <span className="rank-number">{user.id}</span>
-                  <img src={user.fishImg} alt="Fish" className="table-fish-img" />
-                </td>
-                <td><IoPersonCircleOutline className="table-profile-icon" /></td>
-                <td>{user.nickname}</td>
-                <td>Lv {user.level}</td>
-              </tr>
-            ))}
+            {rankingData.map((user, idx) => {
+              const lvl = Math.min(5, Math.max(1, user.level));
+              return (
+                <tr key={user.id}>
+                  <td>
+                    <span className="rank-number">{idx + 1}</span>
+                    <img
+                      src={icons[lvl - 1]}
+                      alt={`Lv ${user.level}`}
+                      className="table-fish-img"
+                    />
+                  </td>
+                  <td>
+                    <IoPersonCircleOutline className="table-profile-icon" />
+                  </td>
+                  <td>{user.nickname}</td>
+                  <td>Lv {user.level}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
-      </div>
 
       </div>
+    </div>
   );
-};
-
-export default RankingPage;
+}

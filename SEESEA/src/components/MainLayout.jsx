@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+// File: src/components/MainLayout.jsx
+
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import { Outlet, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { Outlet } from 'react-router-dom';
 import Header    from './Header';
 import BottomNav from './BottomNav';
 
@@ -11,35 +12,40 @@ export default function MainLayout({ userId, nickname }) {
   const [followers, setFollowers] = useState(0);
   const [following, setFollowing] = useState(0);
   const [error, setError]         = useState('');
-  const location = useLocation();
 
-  useEffect(() => {
+  // 프로필 정보(레벨·EXP·팔로우) 다시 불러오는 함수
+  const refreshProfile = useCallback(() => {
     if (!userId) return;
 
     // 레벨·EXP 조회
-    axios
-      .get(
-        `http://localhost:3001/community/profile/level?user_id=${encodeURIComponent(userId)}`,
-        { withCredentials: true }
-      )
-      .then(res => {
-        setLevel(res.data.level);
-        setExp(res.data.exp);
-      })
-      .catch(() => setError('레벨 조회 실패'));
+    axios.get(
+      `http://localhost:3001/community/profile/level?user_id=${encodeURIComponent(userId)}`,
+      { withCredentials: true }
+    )
+    .then(res => {
+      setLevel(res.data.level);
+      setExp(res.data.exp);
+    })
+    .catch(() => setError('레벨 조회 실패'));
 
     // 팔로워·팔로잉 조회
-    axios
-      .get(
-        `http://localhost:3001/community/follow/count?user_id=${encodeURIComponent(userId)}`,
-        { withCredentials: true }
-      )
-      .then(res => {
-        setFollowers(res.data.followers);
-        setFollowing(res.data.following);
-      })
-      .catch(() => setError(prev => prev ? prev + ' / 팔로우 조회 실패' : '팔로우 조회 실패'));
+    axios.get(
+      `http://localhost:3001/community/follow/count?user_id=${encodeURIComponent(userId)}`,
+      { withCredentials: true }
+    )
+    .then(res => {
+      setFollowers(res.data.followers);
+      setFollowing(res.data.following);
+    })
+    .catch(() =>
+      setError(prev => prev ? prev + ' / 팔로우 조회 실패' : '팔로우 조회 실패')
+    );
   }, [userId]);
+
+  // 마운트 및 userId 변경 시 한 번만 불러오기
+  useEffect(() => {
+    refreshProfile();
+  }, [refreshProfile]);
 
   return (
     <div className="screen-container community-page">
@@ -53,20 +59,15 @@ export default function MainLayout({ userId, nickname }) {
 
       {error && <div className="error-msg">{error}</div>}
 
-      <motion.main
-        className="feed-container-final"
-        key={location.pathname} // Outlet이 바뀔 때마다 애니메이션을 재실행하기 위한 key
-        initial={{ x: 30, opacity: 0 }} // 오른쪽에서
-        animate={{ x: 0, opacity: 1 }}
-        exit={{ x: -30, opacity: 0 }}    // 왼쪽으로
-        transition={{ duration: 1 }}
-      >
+      <main className="feed-container-final">
+        {/* 자식(useOutletContext)에게 전달할 값들 */}
         <Outlet context={{
           userId,
           setFollowers,
-          setFollowing
+          setFollowing,
+          refreshProfile
         }} />
-      </motion.main>
+      </main>
 
       <BottomNav />
     </div>
