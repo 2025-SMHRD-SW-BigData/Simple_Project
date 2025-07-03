@@ -117,7 +117,9 @@ export default function Login({ onLoginSuccess }) {
             />
           </div>
 
-          <div className="forgot-pw">비밀번호를 잊어버렸나요?</div>
+          <div className="forgot-pw">
+              <Link to="/find-password">비밀번호를 잊어버렸나요?</Link>
+          </div>
           <br />
 
           <div className="social-login-icons">

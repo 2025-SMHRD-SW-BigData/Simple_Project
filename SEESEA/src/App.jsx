@@ -13,6 +13,7 @@ import Community   from './components/Community';
 import FeedUpload  from './components/FeedUpload';
 import Pokedex     from './components/Pokedex';
 import RankingPage from './components/RankingPage';
+import FindPassword  from './components/FindPassword'
 
 import './App.css';
 
@@ -72,6 +73,7 @@ export default function App() {
         <Route path="/" element={<Main />} />
         <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
         <Route path="/join"  element={<Join />} />
+        <Route path="/find-password" element={<FindPassword />} />
 
         {/* 공통 레이아웃 */}
         <Route
