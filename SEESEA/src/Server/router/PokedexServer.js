@@ -69,7 +69,7 @@ router.get('/cards', async (req, res) => {
   }
 });
 
-// ─── 카드 생성 & 레벨·EXP 갱신 ─────────────────────────────────────────────────
+// ─── 카드 생성 & 레벨 갱신 ─────────────────────────────────────────────────────
 router.post('/predict', upload.single('image'), async (req, res) => {
   const { user_id } = req.body;
   const file        = req.file;
@@ -108,16 +108,15 @@ router.post('/predict', upload.single('image'), async (req, res) => {
       );
     }
 
-    // 4) MEMBER 테이블 레벨·EXP 업데이트
+    // 4) MEMBER 테이블 레벨 업데이트
     const [[{ cnt }]] = await conn.execute(
       'SELECT COUNT(*) AS cnt FROM CARD WHERE USER_ID = ?',
       [user_id]
     );
     const newLevel = Math.floor(cnt / 2) + 1;
-    const newExp   = (cnt % 2) * 50;
     await conn.execute(
-      'UPDATE Member SET `LEVEL` = ?, EXP = ? WHERE USER_ID = ?',
-      [newLevel, newExp, user_id]
+      'UPDATE Member SET `LEVEL` = ? WHERE USER_ID = ?',
+      [newLevel, user_id]
     );
 
     await conn.commit();
@@ -135,7 +134,7 @@ router.post('/predict', upload.single('image'), async (req, res) => {
   }
 });
 
-// ─── 카드 삭제 & 레벨·EXP 갱신 ─────────────────────────────────────────────────
+// ─── 카드 삭제 & 레벨 갱신 ─────────────────────────────────────────────────────
 router.delete('/cards/:cardId', async (req, res) => {
   const user_id = req.query.user_id;
   const card_id = req.params.cardId;
@@ -161,21 +160,20 @@ router.delete('/cards/:cardId', async (req, res) => {
       [user_id]
     );
 
-    // 3) 새 레벨·EXP 계산
+    // 3) 새 레벨 계산
     const newLevel = Math.floor(cnt / 2) + 1;
-    const newExp   = (cnt % 2) * 50;
 
     // 4) Member 테이블 업데이트
     await conn.execute(
-      'UPDATE Member SET `LEVEL` = ?, EXP = ? WHERE USER_ID = ?',
-      [newLevel, newExp, user_id]
+      'UPDATE Member SET `LEVEL` = ? WHERE USER_ID = ?',
+      [newLevel, user_id]
     );
 
     await conn.commit();
     await conn.release();
 
-    // 5) 최신 레벨·EXP를 함께 반환
-    res.json({ success: true, level: newLevel, expPct: newExp });
+    // 5) 최신 레벨을 함께 반환
+    res.json({ success: true, level: newLevel });
   } catch (err) {
     console.error('카드 삭제 실패:', err);
     if (conn) {
