@@ -66,7 +66,7 @@ def generate_card_metadata(labels):
         f"Labels: {labels}\n\n"
         "Return a JSON object with keys:\n"
         "  name: string,\n"
-        "  hashtags: list of strings (each starting with '#'),\n"
+        "  hashtags: list of **exactly 3** unique strings (each starting with '#'),\n"
         "  description: string.\n"
         "Do not include any other keys."
     )
