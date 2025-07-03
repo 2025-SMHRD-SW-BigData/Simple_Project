@@ -9,11 +9,11 @@ import '../style/Community.css';
 export default function Community() {
   const { userId, setFollowers, setFollowing } = useOutletContext();
 
-  const [posts, setPosts]               = useState([]);
-  const [showComments, setShowComments] = useState({});
-  const [commentInputs, setCommentInputs] = useState({});
+  const [posts, setPosts]                   = useState([]);
+  const [showComments, setShowComments]     = useState({});
+  const [commentInputs, setCommentInputs]   = useState({});
   const [editingComment, setEditingComment] = useState({});
-  const [errorMsg, setErrorMsg]         = useState('');
+  const [errorMsg, setErrorMsg]             = useState('');
   const [showFullCaption, setShowFullCaption] = useState({});
 
   // 1) 피드 + 상태 로드
@@ -49,18 +49,25 @@ export default function Community() {
       .catch(err => console.error('좋아요 토글 실패:', err));
   };
 
-  // 팔로우 토글
-  const handleFollowToggle = (authorId, following, idx) => {
-    const url    = `http://localhost:3001/community/${authorId}/follow`;
-    const method = following ? 'delete' : 'post';
+  // 팔로우 토글 (동일한 작성자의 모든 피드, + 내 팔로잉 수도 동기화)
+  const handleFollowToggle = authorId => {
+    // 1) 현재 posts에서 이 authorId에 대한 기존 following 상태를 찾는다
+    const oldFollowing = posts.find(p => p.authorId === authorId)?.following;
+    const url          = `http://localhost:3001/community/${authorId}/follow`;
+    const method       = oldFollowing ? 'delete' : 'post';
+
     axios({ method, url, data: { user_id: userId }, withCredentials: true })
       .then(() => {
-        setPosts(ps => {
-          const copy = [...ps];
-          copy[idx].following = !following;
-          return copy;
-        });
-        setFollowing(f => f + (following ? -1 : 1));
+        // 2) UI 업데이트: posts 내 동일 authorId 전부 토글
+        setPosts(ps =>
+          ps.map(p =>
+            p.authorId === authorId
+              ? { ...p, following: !oldFollowing }
+              : p
+          )
+        );
+        // 3) 내 '팔로잉' 수 동기화
+        setFollowing(f => f + (oldFollowing ? -1 : 1));
       })
       .catch(err => console.error('팔로우 토글 실패:', err));
   };
@@ -174,9 +181,7 @@ export default function Community() {
                   className={
                     p.following ? 'follow-btn following' : 'follow-btn'
                   }
-                  onClick={() =>
-                    handleFollowToggle(p.authorId, p.following, idx)
-                  }
+                  onClick={() => handleFollowToggle(p.authorId)}
                 >
                   {p.following ? '팔로잉' : '팔로우'}
                 </button>
