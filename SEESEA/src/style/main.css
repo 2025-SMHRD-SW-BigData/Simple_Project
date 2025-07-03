@@ -1,3 +1,5 @@
+/* src/style/main.css */
+
 /* 0. Paperlogy-8ExtraBold 폰트 선언 (파일 최상단!) */
 @font-face {
   font-family: 'Paperlogy-8ExtraBold';
@@ -40,19 +42,13 @@ body {
 .screen-container {
   width: 450px;
   height: 950px;
-  /* margin: 0 auto; → 불필요, body/#root flex에서 이미 중앙 */
   margin: 20px auto;
-
   background-color: #34B3EB;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 
   display: flex;
   flex-direction: column;
-  /*justify-content: center; /* 내부 수직 중앙 */
-  /*align-items: center;     /* 내부 수평 중앙 */
-
-  /* padding: 20px; */
   position: relative;
   overflow: hidden;
 }
@@ -69,11 +65,7 @@ body {
   border-radius: 50%;
   box-shadow: 0 5px 15px rgba(0,0,0,0.1);
   margin-bottom: 20px;
-}
-
-.whale-icon {
-  width: 130px;
-  height: auto;
+  animation: bobbing 4s ease-in-out infinite;
 }
 
 .main-title {
@@ -84,7 +76,7 @@ body {
 }
 
 /* ---------------------------------------- */
-/* 4) 버튼 그룹 및 버튼 스타일            */
+/* 4) 버튼 그룹 및 공통 버튼 스타일       */
 /* ---------------------------------------- */
 .button-group {
   display: flex;
@@ -92,20 +84,25 @@ body {
   gap: 15px;
   width: 90%;
   max-width: 300px;
+  margin: 0 auto;
 }
 
+/* 공통 버튼 스타일 (.btn) */
 .btn {
   width: 100%;
   padding: 14px;
-  border: none;
-  border-radius: 12px;
-  color: white;
+  font-family: 'Paperlogy-8ExtraBold', sans-serif;
   font-size: 1rem;
   font-weight: bold;
-  cursor: pointer;
+  color: #fff;
   background: linear-gradient(to bottom, #1ab0ff, #0099ff);
+  border: none;
+  border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0,77,128,0.3);
+  cursor: pointer;
   transition: all 0.2s ease-in-out;
+  text-align: center;
+  display: block;
 }
 
 .btn:hover {
@@ -119,35 +116,29 @@ body {
   box-shadow: 0 2px 4px rgba(0,77,128,0.3);
 }
 
-/* --- 메인 페이지만을 위한 레이아웃 스타일 --- */
+/* 버튼 간격 추가 */
+.button-group button + button {
+  margin-top: 15px;
+}
+
+/* ---------------------------------------- */
+/* 5) 메인 페이지만을 위한 레이아웃 스타일 */
+/* ---------------------------------------- */
 .main-page-layout {
-  /*background-color: #34B3EB; /* 파란색 배경 지정 */
-  background-image: url('../assets/sea-background.gif'); /* 파일 경로 */
-  background-size: cover; /* 이미지가 화면을 꽉 채우도록 설정 */
-  background-position: center; /* 이미지를 중앙에 위치 */
-  
-  /* 내용물을 가로, 세로 모두 정중앙에 배치! */
-  justify-content: center;
-  align-items: center;
+  background-image: url('../assets/sea-background.gif');
+  background-size: cover;
+  background-position: center;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
-/* 1. 'bobbing'이라는 이름의 애니메이션 동작을 정의합니다. */
+/* ---------------------------------------- */
+/* 6) bobbing 애니메이션 정의              */
+/* ---------------------------------------- */
 @keyframes bobbing {
-  0% {
-    transform: translateY(0); /* 시작 위치 */
-  }
-  50% {
-    transform: translateY(-35px); /* 15px 위로 이동 */
-  }
-  100% {
-    transform: translateY(0); /* 다시 원래 위치로 */
-  }
-}
-
-/* 2. .logo-circle 클래스에 이 애니메이션을 적용합니다. */
-.logo-circle {
-  /* ... 기존 스타일은 그대로 두고 아래 한 줄 추가 ... */
-  animation: bobbing 4s ease-in-out infinite; /* 4초 동안 부드럽게 무한 반복 */
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-35px); }
+  100% { transform: translateY(0); }
 }

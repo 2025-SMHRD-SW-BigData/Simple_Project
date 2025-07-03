@@ -211,3 +211,12 @@ body {
   display: flex; align-items: center; justify-content: center;
   font-family: 'Paperlogy-8ExtraBold'; font-size: 18px; color: #fff; z-index: 50;
 }
+.post-actions-final {
+  display: flex;
+  align-items: center;
+}
+
+/* 이 부분만 추가하세요 → 날짜를 오른쪽 끝으로 밀어냅니다 */
+.post-date {
+  margin-left: auto;
+}

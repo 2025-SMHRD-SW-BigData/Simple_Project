@@ -57,8 +57,10 @@ export default function Login({ onLoginSuccess }) {
     }
   }, [location.search, onLoginSuccess, navigate]);
 
-  // 뒤로가기 버튼
-  const handleBack = () => navigate(-1);
+  // 뒤로가기 버튼: 항상 메인('/')으로 이동
+  const handleBack = () => {
+    navigate('/', { replace: true });
+  };
 
   // 로그인 폼 제출 핸들러
   const handleLogin = async (e) => {
@@ -118,7 +120,7 @@ export default function Login({ onLoginSuccess }) {
           </div>
 
           <div className="forgot-pw">
-              <Link to="/find-password">비밀번호를 잊어버렸나요?</Link>
+            <Link to="/find-password">비밀번호를 잊어버렸나요?</Link>
           </div>
           <br />
 

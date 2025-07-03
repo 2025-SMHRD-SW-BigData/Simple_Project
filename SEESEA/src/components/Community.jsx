@@ -49,16 +49,14 @@ export default function Community() {
       .catch(err => console.error('좋아요 토글 실패:', err));
   };
 
-  // 팔로우 토글 (동일한 작성자의 모든 피드, + 내 팔로잉 수도 동기화)
+  // 팔로우 토글
   const handleFollowToggle = authorId => {
-    // 1) 현재 posts에서 이 authorId에 대한 기존 following 상태를 찾는다
     const oldFollowing = posts.find(p => p.authorId === authorId)?.following;
     const url          = `http://localhost:3001/community/${authorId}/follow`;
     const method       = oldFollowing ? 'delete' : 'post';
 
     axios({ method, url, data: { user_id: userId }, withCredentials: true })
       .then(() => {
-        // 2) UI 업데이트: posts 내 동일 authorId 전부 토글
         setPosts(ps =>
           ps.map(p =>
             p.authorId === authorId
@@ -66,7 +64,6 @@ export default function Community() {
               : p
           )
         );
-        // 3) 내 '팔로잉' 수 동기화
         setFollowing(f => f + (oldFollowing ? -1 : 1));
       })
       .catch(err => console.error('팔로우 토글 실패:', err));
@@ -162,7 +159,14 @@ export default function Community() {
   return (
     <>
       {posts.map((p, idx) => {
-        // ★ 캡션 확장/축소 토글 상태
+        // 작성일시 포맷 (예: "2025년 7월 3일")
+        const postDate = new Date(p.updateDay).toLocaleDateString('ko-KR', {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric'
+        });
+
+        // 캡션 처리
         const THRESHOLD = 80;
         const isLong = p.caption.length > THRESHOLD;
         const expanded = showFullCaption[p.feedId] || false;
@@ -222,7 +226,7 @@ export default function Community() {
               </div>
             </div>
 
-            {/* 좋아요 / 댓글 */}
+            {/* 좋아요 / 댓글 / 작성일시 */}
             <div className="post-actions-final">
               <button
                 onClick={() =>
@@ -243,72 +247,70 @@ export default function Community() {
               >
                 <FaRegComment /> <span>{p.commentCount}</span>
               </button>
+              <span className="post-date">작성일 : {postDate}</span>
             </div>
 
             {/* 댓글창 */}
             {showComments[p.feedId] && (
               <div className="comments-section">
-                {p.comments.map(c => (
-                  <div key={c.commentId} className="comment-item">
-                    <div className="comment-content">
-                      <span className="comment-author">
-                        {c.author}:
-                      </span>
-                      {editingComment[c.commentId] ? (
-                        <input
-                          type="text"
-                          value={
-                            commentInputs[c.commentId] ?? c.text
-                          }
-                          onChange={e =>
-                            setCommentInputs(ci => ({
-                              ...ci,
-                              [c.commentId]: e.target.value
-                            }))
-                          }
-                        />
-                      ) : (
-                        <span className="comment-text">
-                          {c.text}
+                {p.comments.map(c => {
+                  const d = new Date(c.updatedAt);
+                  const formattedDate = `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
+                  return (
+                    <div key={c.commentId} className="comment-item">
+                      <div className="comment-content">
+                        <span className="comment-author">
+                          {c.author}:
                         </span>
+                        {editingComment[c.commentId] ? (
+                          <input
+                            type="text"
+                            value={commentInputs[c.commentId] ?? c.text}
+                            onChange={e =>
+                              setCommentInputs(ci => ({
+                                ...ci,
+                                [c.commentId]: e.target.value
+                              }))
+                            }
+                          />
+                        ) : (
+                          <span className="comment-text">
+                            {c.text}
+                          </span>
+                        )}
+                      </div>
+
+                      {c.authorId === userId && (
+                        <div className="comment-actions">
+                          {editingComment[c.commentId] ? (
+                            <button
+                              onClick={() =>
+                                submitEdit(p.feedId, c.commentId)
+                              }
+                            >
+                              등록
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() =>
+                                startEditing(c.commentId)
+                              }
+                            >
+                              수정
+                            </button>
+                          )}
+                          <button
+                            onClick={() =>
+                              deleteComment(p.feedId, c.commentId)
+                            }
+                          >
+                            삭제
+                          </button>
+                        </div>
                       )}
                     </div>
-                    {c.authorId === userId && (
-                      <div className="comment-actions">
-                        {editingComment[c.commentId] ? (
-                          <button
-                            onClick={() =>
-                              submitEdit(
-                                p.feedId,
-                                c.commentId
-                              )
-                            }
-                          >
-                            등록
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() =>
-                              startEditing(c.commentId)
-                            }
-                          >
-                            수정
-                          </button>
-                        )}
-                        <button
-                          onClick={() =>
-                            deleteComment(
-                              p.feedId,
-                              c.commentId
-                            )
-                          }
-                        >
-                          삭제
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
 
                 <div className="comment-input-area">
                   <input

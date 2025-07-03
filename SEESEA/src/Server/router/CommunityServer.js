@@ -1,8 +1,10 @@
-const express = require('express');
-const multer  = require('multer');
-const mysql   = require('mysql2/promise');
-const path    = require('path');
-const fs      = require('fs');
+// File: src/Server/router/CommunityServer.js
+
+const express   = require('express');
+const multer    = require('multer');
+const mysql     = require('mysql2/promise');
+const path      = require('path');
+const fs        = require('fs');
 
 const router = express.Router();
 
@@ -59,11 +61,12 @@ router.get('/profile/level', async (req, res) => {
   const userId = req.query.user_id;
   if (!userId) return res.status(400).json({ error: 'user_id required' });
   try {
+    // EXP 컬럼 제거 후 LEVEL만 조회
     const [rows] = await pool.execute(
-      'SELECT `LEVEL`, EXP FROM Member WHERE USER_ID = ?', [userId]
+      'SELECT `LEVEL` FROM Member WHERE USER_ID = ?', [userId]
     );
     if (!rows.length) return res.status(404).json({ error: 'Member not found' });
-    res.json({ level: rows[0].LEVEL, exp: rows[0].EXP });
+    res.json({ level: rows[0].LEVEL });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Internal server error' });
@@ -100,13 +103,15 @@ router.get('/posts', async (req, res) => {
   if (!userId) return res.status(400).json({ error: 'user_id required' });
 
   try {
+    // UPDATE_DAY 컬럼을 updateDay로 내려줍니다.
     const [posts] = await pool.execute(`
       SELECT
         C.FEED_ID      AS feedId,
         C.USER_ID      AS authorId,
         M.NAME         AS author,
         C.CONTENTS     AS caption,
-        C.LIKE_POINT   AS likeCount
+        C.LIKE_POINT   AS likeCount,
+        C.UPDATE_DAY   AS updateDay
       FROM COMMUNITY C
       JOIN Member M ON C.USER_ID = M.USER_ID
       ORDER BY C.UPDATE_DAY DESC
@@ -251,12 +256,10 @@ router.put('/:feedId/comment/:commentId', async (req, res) => {
   if (!user_id || !text) return res.status(400).json({ error: 'user_id and text required' });
 
   try {
-    // 소유권 확인 생략하고 바로 업데이트
     await pool.execute(
       'UPDATE COMMENT SET COMMENT_CONTENTS = ? WHERE COMMENT_ID = ? AND COMMENT_USER_ID = ?',
       [text, commentId, user_id]
     );
-    // 수정된 댓글 조회
     const [[row]] = await pool.execute(`
       SELECT
         C.COMMENT_ID        AS commentId,

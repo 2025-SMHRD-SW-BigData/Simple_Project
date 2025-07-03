@@ -20,13 +20,13 @@ const Main = () => {
 
       <div className="button-group">
         <button
-          className="btn login-btn"
+          className="btn"
           onClick={() => navigate('/login', { state: { from: '/' } })}
         >
           로그인
         </button>
         <button
-          className="btn signup-btn"
+          className="btn"
           onClick={() => navigate('/join', { state: { from: '/' } })}
         >
           회원가입

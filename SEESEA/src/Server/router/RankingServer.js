@@ -19,7 +19,7 @@ const pool = mysql.createPool({
 
 /**
  * GET /ranking/users
- * - DB에 저장된 LEVEL과 EXP(=expPct) 그대로 내려줍니다.
+ * - Member 테이블의 LEVEL만 내려줍니다.
  */
 router.get('/users', async (req, res) => {
   try {
@@ -27,10 +27,9 @@ router.get('/users', async (req, res) => {
       `SELECT 
          USER_ID   AS id,
          NAME      AS nickname,
-         \`LEVEL\` AS level,
-         EXP       AS expPct
+         \`LEVEL\` AS level
        FROM Member
-       ORDER BY \`LEVEL\` DESC, EXP DESC`
+       ORDER BY \`LEVEL\` DESC`
     );
     res.json(rows);
   } catch (err) {
