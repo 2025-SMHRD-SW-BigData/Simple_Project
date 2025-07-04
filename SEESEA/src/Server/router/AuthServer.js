@@ -71,6 +71,8 @@ router.get('/google/callback', async (req, res) => {
     const data     = profileRes.data;
     const userId   = String(data.email ?? '');
     const nickname = String(data.name  ?? '');
+    
+    req.session.userId = userId;
 
     if (!userId) {
       console.error('Google userinfo missing email:', data);
@@ -131,6 +133,8 @@ router.get('/kakao/callback', async (req, res) => {
     const acct     = profileRes.data.kakao_account || {};
     let userId     = String(acct.email ?? '');
     const nickname = String(acct.profile?.nickname ?? '');
+
+    req.session.userId = userId;
 
     if (!userId) {
       console.warn('⚠️ Kakao email undefined, fallback to rawId');
@@ -203,6 +207,8 @@ router.get('/naver/callback', async (req, res) => {
     const resp     = profileRes.data.response || {};
     const userId   = String(resp.email ?? '');
     const nickname = String(resp.name  ?? '');
+
+    req.session.userId = userId;
 
     if (!userId) {
       console.error('Naver profile.email missing:', profileRes.data);

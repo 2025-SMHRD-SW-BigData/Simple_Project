@@ -58,18 +58,28 @@ router.get('/member/:id', async (req, res) => {
  * GET /community/profile/level?user_id=…
  */
 router.get('/profile/level', async (req, res) => {
-  const userId = req.query.user_id;
-  if (!userId) return res.status(400).json({ error: 'user_id required' });
   try {
-    // EXP 컬럼 제거 후 LEVEL만 조회
+    // 세션 또는 쿼리 파라미터로 userId 결정
+    const userId = req.session?.userId || req.query.user_id;
+    console.log(userId);
+    if (!userId) {
+      return res.status(400).json({ error: 'user_id가 필요합니다.' });
+    }
+
+    // EXP 컬럼 없이 LEVEL만 조회
     const [rows] = await pool.execute(
-      'SELECT `LEVEL` FROM Member WHERE USER_ID = ?', [userId]
+      'SELECT `LEVEL` FROM Member WHERE USER_ID = ?',
+      [userId]
     );
-    if (!rows.length) return res.status(404).json({ error: 'Member not found' });
-    res.json({ level: rows[0].LEVEL });
+    if (!rows.length) {
+      return res.status(404).json({ error: '회원 정보를 찾을 수 없습니다.' });
+    }
+
+    // exp 필드는 더 이상 없으므로 0으로 리턴
+    res.json({ level: rows[0].LEVEL, exp: 0 });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('프로필 조회 오류:', err);
+    res.status(500).json({ error: '서버 오류' });
   }
 });
 
@@ -78,7 +88,7 @@ router.get('/profile/level', async (req, res) => {
  * GET /community/follow/count?user_id=…
  */
 router.get('/follow/count', async (req, res) => {
-  const userId = req.query.user_id;
+  const userId = req.session.userId;
   if (!userId) return res.status(400).json({ error: 'user_id required' });
   try {
     const [[{ cnt: followers }]] = await pool.execute(
