@@ -34,7 +34,7 @@ app.use(session({
   saveUninitialized: true,
   cookie: {
     secure: false,      // 로컬은 false
-    sameSite: 'lax',    // ⬅️ 변경: 네비게이션 요청에서도 쿠키가 유지되도록
+    sameSite: 'none',    // ⬅️ 변경: 네비게이션 요청에서도 쿠키가 유지되도록
     httpOnly: true
   }
 }));
